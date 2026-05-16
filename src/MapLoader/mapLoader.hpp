@@ -8,8 +8,8 @@ namespace MapLoader {
     struct MapTile {
         int layer = 0;
         std::string texture = "default.png";
-        int x = 100.0f;
-        int y = 100.0f;
+        int x = 0.0f;
+        int y = 0.0f;
         int width = 100.0f;
         int height = 100.0f;
         float r = 1.0f;
