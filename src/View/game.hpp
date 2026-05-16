@@ -7,6 +7,9 @@
 #include "CameraFps.hpp"
 #include "Pipeline.hpp"
 #include <glm/ext/matrix_float4x4.hpp>
+#include "Mesh/quadMesh.hpp"
+#include "uhcstd.hh"
+
 #include <vulkan/vulkan.h>
 
 class Buffer;
@@ -36,8 +39,7 @@ private:
     ShaderData m_shaderData{};
     Pipeline m_pipelineSkybox{};
     Pipeline m_pipeline{};
-    Buffer m_bufferVertex{};
-    Buffer m_bufferIndices{};
+    List::It<QuadMesh::Mesh> m_quadMesh;
 
     Buffer m_cubemapBufferVertex{};
 

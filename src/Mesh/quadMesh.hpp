@@ -2,6 +2,8 @@
 
 #include <glm/glm.hpp>
 
+#include "Buffer.hpp"
+
 namespace QuadMesh {
     struct Mesh {
         Buffer m_bufferVertex{};
@@ -17,5 +19,5 @@ namespace QuadMesh {
         int index;
     };
 
-    Mesh create();
+    Mesh create(int x, int y, int w, int h);
 }

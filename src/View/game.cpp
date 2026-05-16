@@ -10,6 +10,7 @@
 #include <GLFW/glfw3.h>
 #include "imgui.h"
 #include "MapLoader/mapLoader.hpp"
+#include "Mesh/quadMesh.hpp"
 
 GameView::~GameView() {
     m_pipeline.destroy();
@@ -21,6 +22,14 @@ GameView::GameView() {
     const Context& ctx = Context::instance();
 
     MapLoader::Map map = MapLoader::load(ASSETS_PATH "collision.2de");
+    for (int i = 0; i < (int)List::size(map.layers); i++) {
+        MapLoader::MapLayer l = *List::get(map.layers, i);
+        
+        for (int j = 0; j < (int)List::size(l.tiles); j++) {
+            MapLoader::MapTile mt = *List::get(l.tiles, j);
+            List::add(m_quadMesh, QuadMesh::create(mt.x, mt.y, mt.width, mt.height));
+        }
+    }
 
     m_uniformBuffer.create(sizeof(ShaderData));
     gigachad.createFromFile(ASSETS_PATH "texture.png");
@@ -58,46 +67,21 @@ GameView::GameView() {
     //     .setTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
     //     .setPolygonMode(VK_POLYGON_MODE_FILL)
     //     .build();
-
+    
     m_pipeline = GraphicsPipelineBuilder{}
         .setShaders("triangle", ASSETS_PATH "shader.slang")
         .addColorAttachmentFormat(Context::SWAPCHAIN_IMAGE_FORMAT)
         .setDepthAttachmentFormat(ctx.getDepthImageFormat())
-        .addVertexBinding(0, sizeof(Vertex))
+        .addVertexBinding(0, sizeof(QuadMesh::Vertex))
         .addDescriptorLayout(m_descriptorSet.getLayout())
-        .addVertexAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos))
-        .addVertexAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color))
-        .addVertexAttribute(2, 0, VK_FORMAT_R32G32_SFLOAT,    offsetof(Vertex, uv))
+        .addVertexAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(QuadMesh::Vertex, pos))
+        .addVertexAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(QuadMesh::Vertex, color))
+        .addVertexAttribute(2, 0, VK_FORMAT_R32G32_SFLOAT,    offsetof(QuadMesh::Vertex, uv))
+        .addVertexAttribute(3, 0, VK_FORMAT_R32_SINT,         offsetof(QuadMesh::Vertex, index))
         .setTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         .setPolygonMode(VK_POLYGON_MODE_FILL)
         .build();
-
-    const VkDeviceSize indexCount{6};
-    std::vector<Vertex> vertices{
-        {{-1,  1, -5}, {1, 0, 0}, {0, 0}},
-        {{ 1,  1, -5}, {0, 1, 0}, {1, 0}},
-        {{-1, -1, -5}, {0, 0, 1}, {0, 1}},
-        {{ 1, -1, -5}, {0, 1, 1}, {1, 1}},
-
-        // {{-1, -1, -5}, {1, 0, 0}, {0, 0}},
-        // {{ 1, -1, -5}, {0, 1, 0}, {1, 0}},
-        // {{-1,  1, -5}, {0, 0, 1}, {0, 1}},
-        // {{ 1,  1, -5}, {0, 1, 1}, {1, 1}},
-    };
-    std::vector<uint16_t> indices{
-        0, 1, 2,
-        2, 1, 3,
-    };
-
-    int verticesSize = vertices.size() * sizeof(Vertex);
-    int indicesSize = indices.size() * sizeof(uint16_t);
-
-    m_bufferVertex.create(verticesSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-    m_bufferIndices.create(indicesSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-
-    m_bufferVertex.upload(vertices.data(), verticesSize);
-    m_bufferIndices.upload(indices.data(), indicesSize);
-
+        
     m_camera = { CameraFpsCreateInfo{
         .aspect_ratio= ctx.aspectRatio(),
         .fov = 70.0f,
@@ -161,18 +145,21 @@ void GameView::onDraw(double time_since_start, float dt) {
         // }
 
         {
-            // quad image
-            vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
-            m_descriptorSet.bind(cb, m_pipeline.layout);
+            for (int i = 0; i < (int)List::size(m_quadMesh); i++) {
+                QuadMesh::Mesh cm = *List::get(m_quadMesh, i);
+                // quad image
+                vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
+                m_descriptorSet.bind(cb, m_pipeline.layout);
 
-            vkCmdBindVertexBuffers(cb, 0, 1, &m_bufferVertex.buffer, &_vOffset);
-            vkCmdBindIndexBuffer(cb, m_bufferIndices.buffer, 0, VK_INDEX_TYPE_UINT16);
+                vkCmdBindVertexBuffers(cb, 0, 1, &cm.m_bufferVertex.buffer, &_vOffset);
+                vkCmdBindIndexBuffer(cb, cm.m_bufferIndices.buffer, 0, VK_INDEX_TYPE_UINT16);
 
-            m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+                m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
 
 
-            const VkDeviceSize indexCount{6};
-            vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
+                const VkDeviceSize indexCount{6};
+                vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
+            }
         }
     });
 

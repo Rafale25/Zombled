@@ -4,6 +4,7 @@ struct VSInput {
     float3 Pos;
     float3 Color;
     float2 UV;
+    int index;
 };
 
 [[vk::binding(0, 0)]] Sampler2D textures[];
