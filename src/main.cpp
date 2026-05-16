@@ -8,7 +8,7 @@ int main() {
 
     {
         // Log::debug("setView");
-        App menuView;
+        MenuView menuView;
         // ctx.setVsync(VSYNC);
         // Log::debug("setView");
         ctx.setView(menuView);

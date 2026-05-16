@@ -16,13 +16,13 @@ struct Vertex {
     glm::vec2 uv;
 };
 
-App::~App() {
+MenuView::~MenuView() {
     m_pipeline.destroy();
     m_pipelineSkybox.destroy();
     gigachad.destroy();
 }
 
-App::App() {
+MenuView::MenuView() {
     const Context& ctx = Context::instance();
 
     m_uniformBuffer.create(sizeof(ShaderData));
@@ -111,7 +111,7 @@ App::App() {
     }};
 }
 
-void App::onUpdate(double time_since_start, float dt) {
+void MenuView::onUpdate(double time_since_start, float dt) {
     const Context& ctx = Context::instance();
 
     m_camera.update(dt);
@@ -131,7 +131,7 @@ void App::onUpdate(double time_since_start, float dt) {
     m_shaderData.time = time_since_start;
 }
 
-void App::onDraw(double time_since_start, float dt) {
+void MenuView::onDraw(double time_since_start, float dt) {
     VkCommandBuffer cb = Context::instance().getCommandBuffer();
     Context& ctx = Context::instance();
 
@@ -185,7 +185,7 @@ void App::onDraw(double time_since_start, float dt) {
     ImGui::ShowDemoWindow();
 }
 
-void App::onKeyPress(int key) {
+void MenuView::onKeyPress(int key) {
     auto& ctx = Context::instance();
 
     if (key == GLFW_KEY_C && !ImGui::GetIO().WantCaptureKeyboard) {
@@ -193,11 +193,11 @@ void App::onKeyPress(int key) {
     }
 }
 
-void App::onMouseMotion(int x, int y, int dx, int dy) {
+void MenuView::onMouseMotion(int x, int y, int dx, int dy) {
     if (!Context::instance().isCursorEnabled())
         m_camera.onMouseMotion(x, y, dx, dy);
 }
 
-void App::onResize(int width, int height) {
+void MenuView::onResize(int width, int height) {
     m_camera.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }

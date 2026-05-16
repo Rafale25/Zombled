@@ -19,10 +19,10 @@ struct ShaderData {
     float time{0.0f};
 };
 
-class App: public View {
+class MenuView: public View {
 public:
-    App();
-    ~App();
+    MenuView();
+    ~MenuView();
 
     void onUpdate(double time_since_start, float dt);
     void onDraw(double time_since_start, float dt);
