@@ -1,5 +1,5 @@
 #include "Context.hpp"
-#include "View/menu.hpp"
+#include "View/game.hpp"
 #include "uhcio.hh"
 
 int main() {
@@ -8,10 +8,10 @@ int main() {
 
     {
         // Log::debug("setView");
-        App menuView;
+        GameView gameView;
         // ctx.setVsync(VSYNC);
         // Log::debug("setView");
-        ctx.setView(menuView);
+        ctx.setView(gameView);
         // Log::debug("run");
         ctx.run();
     }

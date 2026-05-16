@@ -45,8 +45,8 @@ namespace Mutex {
 #define UHC_BIG_ENDIAN 1
 
 /// Binary buffer with cursor-based reading and writing
-namespace Buffer {
-    /// Buffer object
+namespace UhcBuffer {
+    /// UhcBuffer object
     struct It {
         void* handle;
         unsigned char order;
@@ -56,90 +56,90 @@ namespace Buffer {
     /// Set the byte order for subsequent get/put operations
     /// @param buffer The buffer
     /// @param order Byte order — use UHC_LITTLE_ENDIAN or UHC_BIG_ENDIAN
-    void setOrder(Buffer::It& buffer, unsigned char order);
+    void setOrder(UhcBuffer::It& buffer, unsigned char order);
     /// Reset the buffer cursor to the beginning
     /// @param buffer The buffer
-    void reset(Buffer::It& buffer);
+    void reset(UhcBuffer::It& buffer);
     /// Read a signed 8-bit integer from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    char getI8(Buffer::It& buffer);
+    char getI8(UhcBuffer::It& buffer);
     /// Read an unsigned 8-bit integer from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    unsigned char getU8(Buffer::It& buffer);
+    unsigned char getU8(UhcBuffer::It& buffer);
     /// Read a signed 16-bit integer from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    short getI16(Buffer::It& buffer);
+    short getI16(UhcBuffer::It& buffer);
     /// Read an unsigned 16-bit integer from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    unsigned short getU16(Buffer::It& buffer);
+    unsigned short getU16(UhcBuffer::It& buffer);
     /// Read a signed 32-bit integer from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    int getI32(Buffer::It& buffer);
+    int getI32(UhcBuffer::It& buffer);
     /// Read an unsigned 32-bit integer from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    unsigned int getU32(Buffer::It& buffer);
+    unsigned int getU32(UhcBuffer::It& buffer);
     /// Read a signed 64-bit integer from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    long long getI64(Buffer::It& buffer);
+    long long getI64(UhcBuffer::It& buffer);
     /// Read an unsigned 64-bit integer from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    unsigned long long getU64(Buffer::It& buffer);
+    unsigned long long getU64(UhcBuffer::It& buffer);
     /// Read a 32-bit float from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    float getF32(Buffer::It& buffer);
+    float getF32(UhcBuffer::It& buffer);
     /// Read a 64-bit float from the buffer
     /// @param buffer The buffer
     /// @returns The value read
-    double getF64(Buffer::It& buffer);
+    double getF64(UhcBuffer::It& buffer);
     /// Write a signed 8-bit integer to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putI8(Buffer::It& buffer, char value);
+    void putI8(UhcBuffer::It& buffer, char value);
     /// Write an unsigned 8-bit integer to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putU8(Buffer::It& buffer, unsigned char value);
+    void putU8(UhcBuffer::It& buffer, unsigned char value);
     /// Write a signed 16-bit integer to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putI16(Buffer::It& buffer, short value);
+    void putI16(UhcBuffer::It& buffer, short value);
     /// Write an unsigned 16-bit integer to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putU16(Buffer::It& buffer, unsigned short value);
+    void putU16(UhcBuffer::It& buffer, unsigned short value);
     /// Write a signed 32-bit integer to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putI32(Buffer::It& buffer, int value);
+    void putI32(UhcBuffer::It& buffer, int value);
     /// Write an unsigned 32-bit integer to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putU32(Buffer::It& buffer, unsigned int value);
+    void putU32(UhcBuffer::It& buffer, unsigned int value);
     /// Write a signed 64-bit integer to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putI64(Buffer::It& buffer, long long value);
+    void putI64(UhcBuffer::It& buffer, long long value);
     /// Write an unsigned 64-bit integer to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putU64(Buffer::It& buffer, unsigned long long value);
+    void putU64(UhcBuffer::It& buffer, unsigned long long value);
     /// Write a 32-bit float to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putF32(Buffer::It& buffer, float value);
+    void putF32(UhcBuffer::It& buffer, float value);
     /// Write a 64-bit float to the buffer
     /// @param buffer The buffer
     /// @param value The value to write
-    void putF64(Buffer::It& buffer, double value);
+    void putF64(UhcBuffer::It& buffer, double value);
 };
 
 /// Lightweight thread creation and joining
