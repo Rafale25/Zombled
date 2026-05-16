@@ -1,27 +1,27 @@
 #include "uhcstd.hh"
 
-namespace Buffer {
-    void setOrder(Buffer::It& buffer, unsigned char order) {
+namespace UhcBuffer {
+    void setOrder(UhcBuffer::It& buffer, unsigned char order) {
         buffer.order = order;
     };
 
-    void reset(Buffer::It& buffer) {
+    void reset(UhcBuffer::It& buffer) {
         buffer.cursor = 0;
     };
 
-    char getI8(Buffer::It& buffer) {
+    char getI8(UhcBuffer::It& buffer) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 1;
         return (char)*p;
     };
 
-    unsigned char getU8(Buffer::It& buffer) {
+    unsigned char getU8(UhcBuffer::It& buffer) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 1;
         return *p;
     };
 
-    short getI16(Buffer::It& buffer) {
+    short getI16(UhcBuffer::It& buffer) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 2;
         if (buffer.order == UHC_LITTLE_ENDIAN)
@@ -30,7 +30,7 @@ namespace Buffer {
             return (short)((p[0] << 8) | p[1]);
     };
 
-    unsigned short getU16(Buffer::It& buffer) {
+    unsigned short getU16(UhcBuffer::It& buffer) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 2;
         if (buffer.order == UHC_LITTLE_ENDIAN)
@@ -39,7 +39,7 @@ namespace Buffer {
             return (unsigned short)((p[0] << 8) | p[1]);
     };
 
-    int getI32(Buffer::It& buffer) {
+    int getI32(UhcBuffer::It& buffer) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 4;
         if (buffer.order == UHC_LITTLE_ENDIAN)
@@ -58,7 +58,7 @@ namespace Buffer {
             );
     };
 
-    unsigned int getU32(Buffer::It& buffer) {
+    unsigned int getU32(UhcBuffer::It& buffer) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 4;
         if (buffer.order == UHC_LITTLE_ENDIAN)
@@ -77,7 +77,7 @@ namespace Buffer {
             );
     };
 
-    long long getI64(Buffer::It& buffer) {
+    long long getI64(UhcBuffer::It& buffer) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 8;
         if (buffer.order == UHC_LITTLE_ENDIAN)
@@ -104,7 +104,7 @@ namespace Buffer {
             );
     };
 
-    unsigned long long getU64(Buffer::It& buffer) {
+    unsigned long long getU64(UhcBuffer::It& buffer) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 8;
         if (buffer.order == UHC_LITTLE_ENDIAN)
@@ -131,31 +131,31 @@ namespace Buffer {
             );
     };
 
-    float getF32(Buffer::It& buffer) {
+    float getF32(UhcBuffer::It& buffer) {
         union { unsigned int i; float f ;} u;
         u.i = getU32(buffer);
         return u.f;
     };
 
-    double getF64(Buffer::It& buffer) {
+    double getF64(UhcBuffer::It& buffer) {
         union { unsigned long long i; double f ;} u;
         u.i = getU64(buffer);
         return u.f;
     };
 
-    void putI8(Buffer::It& buffer, char value) {
+    void putI8(UhcBuffer::It& buffer, char value) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 1;
         p[0] = (unsigned char)value;
     };
 
-    void putU8(Buffer::It& buffer, unsigned char value) {
+    void putU8(UhcBuffer::It& buffer, unsigned char value) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 1;
         p[0] = value;
     };
 
-    void putI16(Buffer::It& buffer, short value) {
+    void putI16(UhcBuffer::It& buffer, short value) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 2;
         if (buffer.order == UHC_LITTLE_ENDIAN) {
@@ -167,7 +167,7 @@ namespace Buffer {
         };
     };
 
-    void putU16(Buffer::It& buffer, unsigned short value) {
+    void putU16(UhcBuffer::It& buffer, unsigned short value) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 2;
         if (buffer.order == UHC_LITTLE_ENDIAN) {
@@ -179,7 +179,7 @@ namespace Buffer {
         };
     };
 
-    void putI32(Buffer::It& buffer, int value) {
+    void putI32(UhcBuffer::It& buffer, int value) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 4;
         if (buffer.order == UHC_LITTLE_ENDIAN) {
@@ -195,7 +195,7 @@ namespace Buffer {
         };
     };
 
-    void putU32(Buffer::It& buffer, unsigned int value) {
+    void putU32(UhcBuffer::It& buffer, unsigned int value) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 4;
         if (buffer.order == UHC_LITTLE_ENDIAN) {
@@ -211,7 +211,7 @@ namespace Buffer {
         };
     };
 
-    void putI64(Buffer::It& buffer, long long value) {
+    void putI64(UhcBuffer::It& buffer, long long value) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 8;
         if (buffer.order == UHC_LITTLE_ENDIAN) {
@@ -235,7 +235,7 @@ namespace Buffer {
         };
     };
 
-    void putU64(Buffer::It& buffer, unsigned long long value) {
+    void putU64(UhcBuffer::It& buffer, unsigned long long value) {
         unsigned char* p = (unsigned char*)buffer.handle + buffer.cursor;
         buffer.cursor += 8;
         if (buffer.order == UHC_LITTLE_ENDIAN) {
@@ -259,13 +259,13 @@ namespace Buffer {
         };
     };
 
-    void putF32(Buffer::It& buffer, float value) {
+    void putF32(UhcBuffer::It& buffer, float value) {
         union { float f; unsigned int u ;} u;
         u.f = value;
         putU32(buffer, u.u);
     };
 
-    void putF64(Buffer::It& buffer, double value) {
+    void putF64(UhcBuffer::It& buffer, double value) {
         union { double f; unsigned long long u ;} u;
         u.f = value;
         putU64(buffer, u.u);
