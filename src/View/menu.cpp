@@ -5,7 +5,7 @@
 #include "GraphicsPipelineBuilder.hpp"
 #include "Logger.hpp"
 #include "geometry.hpp"
-// #include "debugdraw/DebugDraw.hpp"
+#include "debugdraw/DebugDraw.hpp"
 #include <glm/ext/vector_float3.hpp>
 #include <GLFW/glfw3.h>
 #include "imgui.h"
@@ -179,8 +179,8 @@ void App::onDraw(double time_since_start, float dt) {
         }
     });
 
-    // DebugDraw::instance().drawCube({0, 0, 0});
-    // DebugDraw::instance().drawAndFlush(cb, m_shaderData.projection * m_shaderData.view);
+    DebugDraw::instance().drawCube({0, 0, 0});
+    DebugDraw::instance().drawAndFlush(cb, m_shaderData.projection * m_shaderData.view);
 
     ImGui::ShowDemoWindow();
 }

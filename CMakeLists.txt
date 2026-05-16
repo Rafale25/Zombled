@@ -14,6 +14,9 @@ file(GLOB_RECURSE SRC_CPP CONFIGURE_DEPENDS
 )
 file(GLOB_RECURSE SRC_HEADERS CONFIGURE_DEPENDS ./src/*.hpp)
 
+add_compile_options(-fsanitize=address -fno-omit-frame-pointer -g)
+add_link_options(-fsanitize=address)
+
 add_executable(${PROJECT_NAME} ${SRC_CPP} ${SRC_C} ${SRC_HEADERS})
 
 set(LIBS_DIR ./libs/)

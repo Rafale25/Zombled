@@ -7,12 +7,12 @@ int main() {
     ctx.init();
 
     {
-        Log::debug("menuView");
+        // Log::debug("setView");
         App menuView;
         // ctx.setVsync(VSYNC);
-        Log::debug("setView");
+        // Log::debug("setView");
         ctx.setView(menuView);
-        Log::debug("run");
+        // Log::debug("run");
         ctx.run();
     }
 
