@@ -1,0 +1,3 @@
+[submodule "libs/WishEngine"]
+	path = libs/WishEngine
+	url = https://github.com/Rafale25/Wish-Engine

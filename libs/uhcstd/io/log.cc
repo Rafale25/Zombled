@@ -1,0 +1,81 @@
+#include <stdarg.h>
+
+#include "uhcio.hh"
+
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#endif
+
+static const char* _levelName(Log::Level level) {
+    switch (level) {
+        case Log::UHC_LOG_TRACE: return "TRACE";
+        case Log::UHC_LOG_DEBUG: return "DEBUG";
+        case Log::UHC_LOG_INFO:  return "INFO";
+        case Log::UHC_LOG_WARN:  return "WARN";
+        case Log::UHC_LOG_ERROR: return "ERROR";
+        default:                return "UNKNOWN";
+    };
+};
+
+#if defined(_WIN32) || defined(_WIN64)
+
+static WORD _levelColor(Log::Level level) {
+    switch (level) {
+        case Log::UHC_LOG_TRACE: return FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+        case Log::UHC_LOG_DEBUG: return FOREGROUND_BLUE | FOREGROUND_INTENSITY;
+        case Log::UHC_LOG_INFO:  return FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+        case Log::UHC_LOG_WARN:  return FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_INTENSITY;
+        case Log::UHC_LOG_ERROR: return FOREGROUND_RED | FOREGROUND_INTENSITY;
+        default:                return FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE;
+    };
+};
+
+static void _log(Log::Level level, const char* fmt, va_list args) {
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(hConsole, &csbi);
+    WORD originalAttrs = csbi.wAttributes;
+
+    SetConsoleTextAttribute(hConsole, _levelColor(level));
+    printf("[%s] ", _levelName(level));
+    vprintf(fmt, args);
+    printf("\n");
+    SetConsoleTextAttribute(hConsole, originalAttrs);
+};
+
+#else
+
+static const char* _levelColor(Log::Level level) {
+    switch (level) {
+        case Log::UHC_LOG_TRACE: return "\033[96m";
+        case Log::UHC_LOG_DEBUG: return "\033[94m";
+        case Log::UHC_LOG_INFO:  return "\033[92m";
+        case Log::UHC_LOG_WARN:  return "\033[93m";
+        case Log::UHC_LOG_ERROR: return "\033[91m";
+        default:                return "\033[37m";
+    };
+};
+
+static void _log(Log::Level level, const char* fmt, va_list args) {
+    printf("%s[%s] ", _levelColor(level), _levelName(level));
+    vprintf(fmt, args);
+    printf("\033[0m\n");
+};
+
+#endif
+
+namespace Log {
+    void trace(const char* fmt, ...) { va_list a; va_start(a, fmt); _log(Log::UHC_LOG_TRACE, fmt, a); va_end(a) ;};
+    void debug(const char* fmt, ...) { va_list a; va_start(a, fmt); _log(Log::UHC_LOG_DEBUG, fmt, a); va_end(a) ;};
+    void info (const char* fmt, ...) { va_list a; va_start(a, fmt); _log(Log::UHC_LOG_INFO,  fmt, a); va_end(a) ;};
+    void warn (const char* fmt, ...) { va_list a; va_start(a, fmt); _log(Log::UHC_LOG_WARN,  fmt, a); va_end(a) ;};
+    void error(const char* fmt, ...) { va_list a; va_start(a, fmt); _log(Log::UHC_LOG_ERROR, fmt, a); va_end(a) ;};
+
+    void msg(const char* fmt, ...) {
+        va_list a;
+        va_start(a, fmt);
+        vprintf(fmt, a);
+        printf("\n");
+        va_end(a);
+    };
+};

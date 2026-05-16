@@ -1,0 +1,55 @@
+#include "uhcstd.hh"
+#include "uhcio.hh"
+#include <stdlib.h>
+
+namespace Thread {
+#if defined(_WIN32) || defined(_WIN64)
+    struct _Args {
+        Thread::Fn fn;
+        void* arg;
+    };
+
+    DWORD WINAPI _wrapper(LPVOID param) {
+        _Args* args = (_Args*)param;
+        Thread::Fn fn = args->fn;
+        void* arg = args->arg;
+        free(args);
+        fn(arg);
+        return 0;
+    };
+
+    Thread::It start(Thread::Fn method, void* arg) {
+        Thread::It thread;
+        _Args* args = (_Args*)malloc(sizeof(_Args));
+        if (!args) {
+            Log::warn("Thread allocation failed");
+            return thread;
+        };
+        args->fn  = method;
+        args->arg = arg;
+        thread.handle = CreateThread(NULL, 0, _wrapper, args, 0, NULL);
+        if (thread.handle == NULL) {
+            free(args);
+            Log::warn("Thread creation failed");
+        };
+        return thread;
+    };
+
+    void join(Thread::It& thread) {
+        WaitForSingleObject(thread.handle, INFINITE);
+    };
+#else
+    Thread::It start(Thread::Fn method, void* arg) {
+        Thread::It thread;
+        if (pthread_create(&thread.handle, NULL, method, arg)) {
+            Log::warn("Thread creation failed");
+            return thread;
+        };
+        return thread;
+    };
+
+    void join(Thread::It& thread) {
+        pthread_join(thread.handle, 0);
+    };
+#endif
+};

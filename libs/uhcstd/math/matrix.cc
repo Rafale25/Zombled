@@ -1,0 +1,257 @@
+#include "uhcmath.hh"
+
+namespace Matrix {
+    void setIdentity(Matrix::It& mat) {
+        mat.values[M00] = 1;
+        mat.values[M01] = 0;
+        mat.values[M02] = 0;
+        mat.values[M03] = 0;
+
+        mat.values[M10] = 0;
+        mat.values[M11] = 1;
+        mat.values[M12] = 0;
+        mat.values[M13] = 0;
+
+        mat.values[M20] = 0;
+        mat.values[M21] = 0;
+        mat.values[M22] = 1;
+        mat.values[M23] = 0;
+
+        mat.values[M30] = 0;
+        mat.values[M31] = 0;
+        mat.values[M32] = 0;
+        mat.values[M33] = 1;
+    };
+
+    void multiply(Matrix::It& result, Matrix::It& left, Matrix::It& right) {
+        result.values[M00] = left.values[M00] * right.values[M00] + left.values[M01] * right.values[M10] + left.values[M02] * right.values[M20] + left.values[M03] * right.values[M30];
+        result.values[M01] = left.values[M00] * right.values[M01] + left.values[M01] * right.values[M11] + left.values[M02] * right.values[M21] + left.values[M03] * right.values[M31];
+        result.values[M02] = left.values[M00] * right.values[M02] + left.values[M01] * right.values[M12] + left.values[M02] * right.values[M22] + left.values[M03] * right.values[M32];
+        result.values[M03] = left.values[M00] * right.values[M03] + left.values[M01] * right.values[M13] + left.values[M02] * right.values[M23] + left.values[M03] * right.values[M33];
+
+        result.values[M10] = left.values[M10] * right.values[M00] + left.values[M11] * right.values[M10] + left.values[M12] * right.values[M20] + left.values[M13] * right.values[M30];
+        result.values[M11] = left.values[M10] * right.values[M01] + left.values[M11] * right.values[M11] + left.values[M12] * right.values[M21] + left.values[M13] * right.values[M31];
+        result.values[M12] = left.values[M10] * right.values[M02] + left.values[M11] * right.values[M12] + left.values[M12] * right.values[M22] + left.values[M13] * right.values[M32];
+        result.values[M13] = left.values[M10] * right.values[M03] + left.values[M11] * right.values[M13] + left.values[M12] * right.values[M23] + left.values[M13] * right.values[M33];
+
+        result.values[M20] = left.values[M20] * right.values[M00] + left.values[M21] * right.values[M10] + left.values[M22] * right.values[M20] + left.values[M23] * right.values[M30];
+        result.values[M21] = left.values[M20] * right.values[M01] + left.values[M21] * right.values[M11] + left.values[M22] * right.values[M21] + left.values[M23] * right.values[M31];
+        result.values[M22] = left.values[M20] * right.values[M02] + left.values[M21] * right.values[M12] + left.values[M22] * right.values[M22] + left.values[M23] * right.values[M32];
+        result.values[M23] = left.values[M20] * right.values[M03] + left.values[M21] * right.values[M13] + left.values[M22] * right.values[M23] + left.values[M23] * right.values[M33];
+
+        result.values[M30] = left.values[M30] * right.values[M00] + left.values[M31] * right.values[M10] + left.values[M32] * right.values[M20] + left.values[M33] * right.values[M30];
+        result.values[M31] = left.values[M30] * right.values[M01] + left.values[M31] * right.values[M11] + left.values[M32] * right.values[M21] + left.values[M33] * right.values[M31];
+        result.values[M32] = left.values[M30] * right.values[M02] + left.values[M31] * right.values[M12] + left.values[M32] * right.values[M22] + left.values[M33] * right.values[M32];
+        result.values[M33] = left.values[M30] * right.values[M03] + left.values[M31] * right.values[M13] + left.values[M32] * right.values[M23] + left.values[M33] * right.values[M33];
+    };
+
+
+    void copy(Matrix::It& src, Matrix::It& dest) {
+        dest.values[M00] = src.values[M00];
+        dest.values[M01] = src.values[M01];
+        dest.values[M02] = src.values[M02];
+        dest.values[M03] = src.values[M03];
+
+        dest.values[M10] = src.values[M10];
+        dest.values[M11] = src.values[M11];
+        dest.values[M12] = src.values[M12];
+        dest.values[M13] = src.values[M13];
+
+        dest.values[M20] = src.values[M20];
+        dest.values[M21] = src.values[M21];
+        dest.values[M22] = src.values[M22];
+        dest.values[M23] = src.values[M23];
+
+        dest.values[M30] = src.values[M30];
+        dest.values[M31] = src.values[M31];
+        dest.values[M32] = src.values[M32];
+        dest.values[M33] = src.values[M33];
+    };
+
+    void ortho2D(Matrix::It& mat, float left, float right, float bottom, float top, float near, float far) {
+        float xOrt = 2.0f / (right - left);
+        float yOrt = 2.0f / (top - bottom);
+        float zOrt = -2.0f / (far - near);
+
+        float tx = -(right + left) / (right - left);
+        float ty = -(top + bottom) / (top - bottom);
+        float tz = -(far + near) / (far - near);
+
+        mat.values[M00] = xOrt;
+        mat.values[M10] = 0.0f;
+        mat.values[M20] = 0.0f;
+        mat.values[M30] = tx;
+
+        mat.values[M01] = 0.0f;
+        mat.values[M11] = yOrt;
+        mat.values[M21] = 0.0f;
+        mat.values[M31] = ty;
+
+        mat.values[M02] = 0.0f;
+        mat.values[M12] = 0.0f;
+        mat.values[M22] = zOrt;
+        mat.values[M32] = tz;
+
+        mat.values[M03] = 0.0f;
+        mat.values[M13] = 0.0f;
+        mat.values[M23] = 0.0f;
+        mat.values[M33] = 1.0f;
+    };
+
+    void ortho2DVk(Matrix::It& mat, float left, float right, float bottom, float top, float near, float far) {
+        float xOrt = 2.0f / (right - left);
+        float yOrt = 2.0f / (top - bottom);
+        float zOrt = -1.0f / (far - near);
+
+        float tx = -(right + left) / (right - left);
+        float ty = -(top + bottom) / (top - bottom);
+        float tz = -near / (far - near);
+
+        mat.values[M00] = xOrt;
+        mat.values[M10] = 0.0f;
+        mat.values[M20] = 0.0f;
+        mat.values[M30] = tx;
+
+        mat.values[M01] = 0.0f;
+        mat.values[M11] = yOrt;
+        mat.values[M21] = 0.0f;
+        mat.values[M31] = ty;
+
+        mat.values[M02] = 0.0f;
+        mat.values[M12] = 0.0f;
+        mat.values[M22] = zOrt;
+        mat.values[M32] = tz;
+
+        mat.values[M03] = 0.0f;
+        mat.values[M13] = 0.0f;
+        mat.values[M23] = 0.0f;
+        mat.values[M33] = 1.0f;
+    };
+
+    void projection(Matrix::It& mat, float width, float height, float fov, float near, float far) {
+        float aspectRatio = width / height;
+        float yScale = 1.0f / tan(Math::rad(fov / 2.0f));
+        float xScale = yScale / aspectRatio;
+        float frustumLength = far - near;
+
+        mat.values[M00] = xScale;
+        mat.values[M11] = yScale;
+        mat.values[M22] = -((far + near) / frustumLength);
+        mat.values[M23] = -1.0f;
+        mat.values[M32] = -((2.0f * near * far) / frustumLength);
+        mat.values[M33] = 0.0f;
+    };
+
+    void scale(Matrix::It& mat, float x, float y, float z, float w) {
+        mat.values[M00] = mat.values[M00] * x;
+        mat.values[M01] = mat.values[M01] * x;
+        mat.values[M02] = mat.values[M02] * x;
+        mat.values[M03] = mat.values[M03] * x;
+        
+        mat.values[M10] = mat.values[M10] * y;
+        mat.values[M11] = mat.values[M11] * y;
+        mat.values[M12] = mat.values[M12] * y;
+        mat.values[M13] = mat.values[M13] * y;
+        
+        mat.values[M20] = mat.values[M20] * z;
+        mat.values[M21] = mat.values[M21] * z;
+        mat.values[M22] = mat.values[M22] * z;
+        mat.values[M23] = mat.values[M23] * z;
+
+        mat.values[M30] = mat.values[M30] * z;
+        mat.values[M31] = mat.values[M31] * z;
+        mat.values[M32] = mat.values[M32] * z;
+        mat.values[M33] = mat.values[M33] * z;
+    };
+
+    
+    void translate(Matrix::It& mat, float x, float y, float z, float w) {
+        Matrix::It cpy;
+        Matrix::copy(mat, cpy);
+    
+        mat.values[M30] += cpy.values[M00] * x + cpy.values[M10] * y + cpy.values[M20] * z + cpy.values[M30] * w;
+        mat.values[M31] += cpy.values[M01] * x + cpy.values[M11] * y + cpy.values[M21] * z + cpy.values[M31] * w;
+        mat.values[M32] += cpy.values[M02] * x + cpy.values[M12] * y + cpy.values[M22] * z + cpy.values[M32] * w;
+        mat.values[M33] += cpy.values[M03] * x + cpy.values[M13] * y + cpy.values[M23] * z + cpy.values[M33] * w;
+    };
+
+    void lookAt(Matrix::It& mat, VectorF::It& eye, VectorF::It& center, VectorF::It& up) {
+        VectorF::It f;
+        VectorF::sub(f, center, eye);
+        VectorF::normalize(f);
+
+        VectorF::It s;
+        VectorF::cross(s, f, up);
+        VectorF::normalize(s);
+
+        VectorF::It u;
+        VectorF::cross(u, s, f);
+
+        mat.values[M00] = s.x;
+        mat.values[M01] = u.x;
+        mat.values[M02] = -f.x;
+        mat.values[M03] = 0.0f;
+
+        mat.values[M10] = s.y;
+        mat.values[M11] = u.y;
+        mat.values[M12] = -f.y;
+        mat.values[M13] = 0.0f;
+
+        mat.values[M20] = s.z;
+        mat.values[M21] = u.z;
+        mat.values[M22] = -f.z;
+        mat.values[M23] = 0.0f;
+
+        mat.values[M30] = -VectorF::dot(s, eye);
+        mat.values[M31] = -VectorF::dot(u, eye);
+        mat.values[M32] =  VectorF::dot(f, eye);
+        mat.values[M33] = 1.0f;
+    };
+
+    void rotate(Matrix::It& mat, float angle, float x, float y, float z) {
+        Matrix::It cpy;
+        Matrix::copy(mat, cpy);
+
+        float c = cos(angle);
+        float s = sin(angle);
+        float oneMinusC = 1.0f - c;
+        float xy = x * y;
+        float yz = y * z;
+        float xz = x * z;
+        float xs = x * s;
+        float ys = y * s;
+        float zs = z * s;
+
+        float f00 = x * x * oneMinusC + c;
+        float f01 = xy * oneMinusC + zs;
+        float f02 = xz * oneMinusC - ys;
+        float f10 = xy * oneMinusC - zs;
+        float f11 = y * y * oneMinusC + c;
+        float f12 = yz * oneMinusC + xs;
+        float f20 = xz * oneMinusC + ys;
+        float f21 = yz * oneMinusC - xs;
+        float f22 = z * z * oneMinusC + c;
+
+        float t00 = cpy.values[M00] * f00 + cpy.values[M10] * f01 + cpy.values[M20] * f02;
+        float t01 = cpy.values[M01] * f00 + cpy.values[M11] * f01 + cpy.values[M21] * f02;
+        float t02 = cpy.values[M02] * f00 + cpy.values[M12] * f01 + cpy.values[M22] * f02;
+        float t03 = cpy.values[M03] * f00 + cpy.values[M13] * f01 + cpy.values[M23] * f02;
+        float t10 = cpy.values[M00] * f10 + cpy.values[M10] * f11 + cpy.values[M20] * f12;
+        float t11 = cpy.values[M01] * f10 + cpy.values[M11] * f11 + cpy.values[M21] * f12;
+        float t12 = cpy.values[M02] * f10 + cpy.values[M12] * f11 + cpy.values[M22] * f12;
+        float t13 = cpy.values[M03] * f10 + cpy.values[M13] * f11 + cpy.values[M23] * f12;
+
+        mat.values[M20] = cpy.values[M00] * f20 + cpy.values[M10] * f21 + cpy.values[M20] * f22;
+        mat.values[M21] = cpy.values[M01] * f20 + cpy.values[M11] * f21 + cpy.values[M21] * f22;
+        mat.values[M22] = cpy.values[M02] * f20 + cpy.values[M12] * f21 + cpy.values[M22] * f22;
+        mat.values[M23] = cpy.values[M03] * f20 + cpy.values[M13] * f21 + cpy.values[M23] * f22;
+        mat.values[M00] = t00;
+        mat.values[M01] = t01;
+        mat.values[M02] = t02;
+        mat.values[M03] = t03;
+        mat.values[M10] = t10;
+        mat.values[M11] = t11;
+        mat.values[M12] = t12;
+        mat.values[M13] = t13;
+    };
+};
