@@ -4,7 +4,7 @@
 #include "View.hpp"
 #include "DescriptorSet.hpp"
 #include "UniformBuffer.hpp"
-#include "CameraFps.hpp"
+#include "Camera2D.hpp"
 #include "Pipeline.hpp"
 #include <glm/ext/matrix_float4x4.hpp>
 #include "Mesh/quadMesh.hpp"
@@ -48,5 +48,5 @@ private:
     DescriptorSet m_descriptorSet{};
     // DescriptorSet m_descriptorSetCubemap{};
 
-    FPSCamera m_camera{};
+    Camera2D m_camera{};
 };
