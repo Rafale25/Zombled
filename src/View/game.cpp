@@ -11,12 +11,6 @@
 #include "imgui.h"
 #include "MapLoader/mapLoader.hpp"
 
-struct Vertex {
-    glm::vec3 pos;
-    glm::vec3 color;
-    glm::vec2 uv;
-};
-
 GameView::~GameView() {
     m_pipeline.destroy();
     m_pipelineSkybox.destroy();
@@ -49,7 +43,7 @@ GameView::GameView() {
     // m_descriptorSetCubemap.addTexture(m_cubemap.sampler, m_cubemap.imageView);
 
     m_descriptorSet.create(0, 1);
-    int32_t _textureIndex = m_descriptorSet.addTexture(gigachad.sampler, gigachad.imageView);
+    int32_t _textureIndex = m_descriptorSet.addTexture(gigachad);
 
 
     Geometry::cube(m_cubemapBufferVertex, glm::vec3(100.0f), glm::vec3(0.0f));
