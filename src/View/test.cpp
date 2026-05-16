@@ -64,7 +64,7 @@ TestView::TestView() {
     //     .build();
 
     m_pipeline = GraphicsPipelineBuilder{}
-        .setShaders("triangle", "./libs/WishEngine/src/shader.slang")
+        .setShaders("triangle", ASSETS_PATH "shader.slang")
         .addColorAttachmentFormat(Context::SWAPCHAIN_IMAGE_FORMAT)
         .setDepthAttachmentFormat(ctx.getDepthImageFormat())
         .addVertexBinding(0, sizeof(Vertex))

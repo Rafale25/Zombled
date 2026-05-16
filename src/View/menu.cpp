@@ -26,81 +26,6 @@ MenuView::MenuView() {
     const Context& ctx = Context::instance();
 
     m_uniformBuffer.create(sizeof(ShaderData));
-    gigachad.createFromFile("libs/WishEngine/Gigachad.jpg");
-
-    gigachad.createSampler();
-
-    // const char* paths[6] = {
-    //     "./src/skybox/right.jpg",   // +X
-    //     "./src/skybox/left.jpg",    // -X
-    //     "./src/skybox/top.jpg",     // +Y
-    //     "./src/skybox/bottom.jpg",  // -Y
-    //     "./src/skybox/front.jpg",   // +Z
-    //     "./src/skybox/back.jpg",    // -2
-    // };
-
-    // m_cubemap.createFromFileCubemap(paths);
-    // m_cubemap.createSampler();
-
-    // m_descriptorSetCubemap.create(0, 1);
-    // m_descriptorSetCubemap.addTexture(m_cubemap.sampler, m_cubemap.imageView);
-
-    m_descriptorSet.create(0, 2);
-    int32_t _textureIndex1 = m_descriptorSet.addTexture(gigachad);
-    int32_t _textureIndex2 = m_descriptorSet.addTexture(gigachad);
-
-
-    Geometry::cube(m_cubemapBufferVertex, glm::vec3(100.0f), glm::vec3(0.0f));
-
-    // m_pipelineSkybox = GraphicsPipelineBuilder{}
-    //     .setShaders("skybox", "./src/skybox.slang")
-    //     .addColorAttachmentFormat(Context::SWAPCHAIN_IMAGE_FORMAT)
-    //     .setDepthAttachmentFormat(ctx.getDepthImageFormat())
-    //     .addVertexBinding(0, sizeof(float) * 3)
-    //     .addDescriptorLayout(m_descriptorSetCubemap.getLayout())
-    //     .addVertexAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, 0)
-    //     .setTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
-    //     .setPolygonMode(VK_POLYGON_MODE_FILL)
-    //     .build();
-
-    m_pipeline = GraphicsPipelineBuilder{}
-        .setShaders("triangle", ASSETS_PATH "shader.slang")
-        .addColorAttachmentFormat(Context::SWAPCHAIN_IMAGE_FORMAT)
-        .setDepthAttachmentFormat(ctx.getDepthImageFormat())
-        .addVertexBinding(0, sizeof(Vertex))
-        .addDescriptorLayout(m_descriptorSet.getLayout())
-        .addVertexAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, pos))
-        .addVertexAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(Vertex, color))
-        .addVertexAttribute(2, 0, VK_FORMAT_R32G32_SFLOAT,    offsetof(Vertex, uv))
-        .setTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
-        .setPolygonMode(VK_POLYGON_MODE_FILL)
-        .build();
-
-    const VkDeviceSize indexCount{6};
-    std::vector<Vertex> vertices{
-        {{-1,  1, -5}, {1, 0, 0}, {0, 0}},
-        {{ 1,  1, -5}, {0, 1, 0}, {1, 0}},
-        {{-1, -1, -5}, {0, 0, 1}, {0, 1}},
-        {{ 1, -1, -5}, {0, 1, 1}, {1, 1}},
-
-        // {{-1, -1, -5}, {1, 0, 0}, {0, 0}},
-        // {{ 1, -1, -5}, {0, 1, 0}, {1, 0}},
-        // {{-1,  1, -5}, {0, 0, 1}, {0, 1}},
-        // {{ 1,  1, -5}, {0, 1, 1}, {1, 1}},
-    };
-    std::vector<uint16_t> indices{
-        0, 1, 2,
-        2, 1, 3,
-    };
-
-    int verticesSize = vertices.size() * sizeof(Vertex);
-    int indicesSize = indices.size() * sizeof(uint16_t);
-
-    m_bufferVertex.create(verticesSize, VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
-    m_bufferIndices.create(indicesSize, VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
-
-    m_bufferVertex.upload(vertices.data(), verticesSize);
-    m_bufferIndices.upload(indices.data(), indicesSize);
 
     m_camera = { CameraFpsCreateInfo{
         .aspect_ratio= ctx.aspectRatio(),
@@ -137,48 +62,6 @@ void MenuView::onDraw(double time_since_start, float dt) {
     Context& ctx = Context::instance();
 
     m_uniformBuffer.upload(&m_shaderData, sizeof(ShaderData));
-
-    auto pass = RenderPass()
-        .defaultViewportScissor()
-        .color(
-            ctx.getSwapchainImage(),
-            ctx.getSwapchainImageView(),
-            { .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR })
-        .depth(
-            ctx.getDepthTexture(),
-            { .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR });
-
-
-    pass.execute([&]() {
-        VkDeviceSize _vOffset{ 0 };
-
-        // {
-        //     // Cubemap
-        //     vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineSkybox.pipeline);
-        //     m_descriptorSetCubemap.bind(cb, m_pipelineSkybox.layout);
-
-        //     vkCmdBindVertexBuffers(cb, 0, 1, &m_cubemapBufferVertex.buffer, &_vOffset);
-        //     m_uniformBuffer.pushConstant(m_pipelineSkybox.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
-
-        //     const VkDeviceSize vertexCount{6*6};
-        //     vkCmdDraw(cb, vertexCount, 1, 0, 0);
-        // }
-
-        {
-            // quad image
-            vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
-            m_descriptorSet.bind(cb, m_pipeline.layout);
-
-            vkCmdBindVertexBuffers(cb, 0, 1, &m_bufferVertex.buffer, &_vOffset);
-            vkCmdBindIndexBuffer(cb, m_bufferIndices.buffer, 0, VK_INDEX_TYPE_UINT16);
-
-            m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
-
-
-            const VkDeviceSize indexCount{6};
-            vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
-        }
-    });
 
     DebugDraw::instance().drawCube({0, 0, 0});
     DebugDraw::instance().drawAndFlush(cb, m_shaderData.projection * m_shaderData.view);
