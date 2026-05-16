@@ -1,5 +1,5 @@
 #include "Context.hpp"
-#include "game.hpp"
+#include "test.hpp"
 #include "UniformBuffer.hpp"
 #include "RenderPass.hpp"
 #include "GraphicsPipelineBuilder.hpp"
@@ -9,7 +9,6 @@
 #include <glm/ext/vector_float3.hpp>
 #include <GLFW/glfw3.h>
 #include "imgui.h"
-#include "MapLoader/mapLoader.hpp"
 
 struct Vertex {
     glm::vec3 pos;
@@ -17,19 +16,17 @@ struct Vertex {
     glm::vec2 uv;
 };
 
-GameView::~GameView() {
+TestView::~TestView() {
     m_pipeline.destroy();
     m_pipelineSkybox.destroy();
     gigachad.destroy();
 }
 
-GameView::GameView() {
+TestView::TestView() {
     const Context& ctx = Context::instance();
 
-    MapLoader::Map map = MapLoader::load(ASSETS_PATH "collision.2de");
-
     m_uniformBuffer.create(sizeof(ShaderData));
-    gigachad.createFromFile(ASSETS_PATH "texture.png");
+    gigachad.createFromFile("libs/WishEngine/Gigachad.jpg");
 
     gigachad.createSampler();
 
@@ -48,8 +45,9 @@ GameView::GameView() {
     // m_descriptorSetCubemap.create(0, 1);
     // m_descriptorSetCubemap.addTexture(m_cubemap.sampler, m_cubemap.imageView);
 
-    m_descriptorSet.create(0, 1);
-    int32_t _textureIndex = m_descriptorSet.addTexture(gigachad.sampler, gigachad.imageView);
+    m_descriptorSet.create(0, 2);
+    int32_t _textureIndex1 = m_descriptorSet.addTexture(gigachad);
+    int32_t _textureIndex2 = m_descriptorSet.addTexture(gigachad);
 
 
     Geometry::cube(m_cubemapBufferVertex, glm::vec3(100.0f), glm::vec3(0.0f));
@@ -66,7 +64,7 @@ GameView::GameView() {
     //     .build();
 
     m_pipeline = GraphicsPipelineBuilder{}
-        .setShaders("triangle", ASSETS_PATH "shader.slang")
+        .setShaders("triangle", "./libs/WishEngine/src/shader.slang")
         .addColorAttachmentFormat(Context::SWAPCHAIN_IMAGE_FORMAT)
         .setDepthAttachmentFormat(ctx.getDepthImageFormat())
         .addVertexBinding(0, sizeof(Vertex))
@@ -114,7 +112,7 @@ GameView::GameView() {
     }};
 }
 
-void GameView::onUpdate(double time_since_start, float dt) {
+void TestView::onUpdate(double time_since_start, float dt) {
     const Context& ctx = Context::instance();
 
     m_camera.update(dt);
@@ -134,7 +132,7 @@ void GameView::onUpdate(double time_since_start, float dt) {
     m_shaderData.time = time_since_start;
 }
 
-void GameView::onDraw(double time_since_start, float dt) {
+void TestView::onDraw(double time_since_start, float dt) {
     VkCommandBuffer cb = Context::instance().getCommandBuffer();
     Context& ctx = Context::instance();
 
@@ -188,7 +186,7 @@ void GameView::onDraw(double time_since_start, float dt) {
     ImGui::ShowDemoWindow();
 }
 
-void GameView::onKeyPress(int key) {
+void TestView::onKeyPress(int key) {
     auto& ctx = Context::instance();
 
     if (key == GLFW_KEY_C && !ImGui::GetIO().WantCaptureKeyboard) {
@@ -196,11 +194,11 @@ void GameView::onKeyPress(int key) {
     }
 }
 
-void GameView::onMouseMotion(int x, int y, int dx, int dy) {
+void TestView::onMouseMotion(int x, int y, int dx, int dy) {
     if (!Context::instance().isCursorEnabled())
         m_camera.onMouseMotion(x, y, dx, dy);
 }
 
-void GameView::onResize(int width, int height) {
+void TestView::onResize(int width, int height) {
     m_camera.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }

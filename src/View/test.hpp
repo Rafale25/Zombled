@@ -19,10 +19,10 @@ struct ShaderData {
     float time{0.0f};
 };
 
-class MenuView: public View {
+class TestView: public View {
 public:
-    MenuView();
-    ~MenuView();
+    TestView();
+    ~TestView();
 
     void onUpdate(double time_since_start, float dt);
     void onDraw(double time_since_start, float dt);
@@ -42,7 +42,9 @@ private:
     Buffer m_cubemapBufferVertex{};
 
     Texture gigachad{};
+    // Texture m_cubemap{};
     DescriptorSet m_descriptorSet{};
+    // DescriptorSet m_descriptorSetCubemap{};
 
     FPSCamera m_camera{};
 };

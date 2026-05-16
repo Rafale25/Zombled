@@ -45,8 +45,9 @@ MenuView::MenuView() {
     // m_descriptorSetCubemap.create(0, 1);
     // m_descriptorSetCubemap.addTexture(m_cubemap.sampler, m_cubemap.imageView);
 
-    m_descriptorSet.create(0, 1);
-    int32_t _textureIndex = m_descriptorSet.addTexture(gigachad.sampler, gigachad.imageView);
+    m_descriptorSet.create(0, 2);
+    int32_t _textureIndex1 = m_descriptorSet.addTexture(gigachad);
+    int32_t _textureIndex2 = m_descriptorSet.addTexture(gigachad);
 
 
     Geometry::cube(m_cubemapBufferVertex, glm::vec3(100.0f), glm::vec3(0.0f));
@@ -63,7 +64,7 @@ MenuView::MenuView() {
     //     .build();
 
     m_pipeline = GraphicsPipelineBuilder{}
-        .setShaders("triangle", "./libs/WishEngine/src/shader.slang")
+        .setShaders("triangle", ASSETS_PATH "shader.slang")
         .addColorAttachmentFormat(Context::SWAPCHAIN_IMAGE_FORMAT)
         .setDepthAttachmentFormat(ctx.getDepthImageFormat())
         .addVertexBinding(0, sizeof(Vertex))
