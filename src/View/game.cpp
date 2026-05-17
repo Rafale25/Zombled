@@ -83,7 +83,7 @@ GameView::GameView() {
         .setPolygonMode(VK_POLYGON_MODE_FILL)
         .build();
 
-    m_camera = Camera2D({0, 0}, 0, 800, 0, 600);
+    m_camera = Camera2D({0, 0}, 0, ctx.m_framebufferWidth, 0, ctx.m_framebufferHeight);
     m_player = EntityPlayer({0, 0}, {32.0f, 32.0f});
 }
 
@@ -114,7 +114,7 @@ void GameView::onUpdate(double time_since_start, float dt) {
     // auto newPos =  m_camera.getPosition() + delta;
     m_camera.setPosition(
         glm::vec3(
-            -m_player.position + m_player.size + glm::vec2(ctx.m_framebufferWidth/4.0f, ctx.m_framebufferHeight/4.0f)
+            -m_player.position + m_player.size + glm::vec2(ctx.m_framebufferWidth/2.0f, ctx.m_framebufferHeight/2.0f)
             ,0.0f));
 }
 
