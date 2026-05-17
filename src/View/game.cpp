@@ -21,7 +21,7 @@ GameView::~GameView() {
 GameView::GameView() {
     const Context& ctx = Context::instance();
 
-    map = MapLoader::load(ASSETS_PATH "collision.2de");
+    map = MapLoader::load(ASSETS_PATH "lobby.2de");
     for (int i = 0; i < (int)List::size(map.layers); i++) {
         MapLoader::MapLayer l = *List::get(map.layers, i);
 
