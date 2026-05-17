@@ -78,11 +78,23 @@ void MenuView::onDraw(double time_since_start, float dt) {
     ImGuiWindowFlags window_flags = 0;
     window_flags |= ImGuiWindowFlags_NoBackground;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
+    window_flags |= ImGuiWindowFlags_NoSavedSettings;
+    window_flags |= ImGuiWindowFlags_NoCollapse;
+    window_flags |= ImGuiWindowFlags_NoMove;
+    window_flags |= ImGuiWindowFlags_NoResize;
 
     // bool open_ptr = true;
+    ImGui::SetNextWindowPos((ImVec2){0, 0});
+    ImGui::SetNextWindowSize((ImVec2){400, 600});
+
     ImGui::Begin("##FullscreenWindow", nullptr, window_flags);
         ImGui::InputText("username", buffer_username, sizeof(buffer_username));
         ImGui::InputText("ip", buffer_ip, sizeof(buffer_ip));
+
+        if (ImGui::Button("Join")) {
+            logD("Joining...");
+        }
+
     ImGui::End();
 
     ImGui::ShowDemoWindow();
