@@ -1,0 +1,67 @@
+{
+    "version": 6,
+    "cmakeMinimumRequired": {
+        "major": 3,
+        "minor": 25,
+        "patch": 0
+    },
+    "configurePresets": [
+        {
+            "name": "conf-common",
+            "description": "",
+            "hidden": true,
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_EXPORT_COMPILE_COMMANDS": true
+            },
+            "environment": {
+                "BASE_CMAKE_CXX_FLAGS": "-W -Wall -Wextra -Wpedantic -Wno-unused-variable -Wno-unused-parameter -Wno-strict-aliasing -fdiagnostics-color -Wno-missing-field-initializers -Wreturn-type -Werror=return-type"
+            }
+        },
+        {
+            "name": "gcc-debug",
+            "displayName": "GCC Debug",
+            "inherits": "conf-common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_CXX_FLAGS": "$env{BASE_CMAKE_CXX_FLAGS} -Wshadow=local -g3 -fno-omit-frame-pointer"
+            }
+        },
+        {
+            "name": "gcc-release",
+            "displayName": "GCC Release",
+            "inherits": "conf-common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_CXX_FLAGS": "$env{BASE_CMAKE_CXX_FLAGS} -O3"
+            }
+        },
+        {
+            "name": "clang-debug",
+            "displayName": "Clang Debug",
+            "inherits": "conf-common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_CXX_FLAGS": "$env{BASE_CMAKE_CXX_FLAGS} -Wshadow-uncaptured-local -Wno-gnu-zero-variadic-macro-arguments -g3 -fno-omit-frame-pointer"
+            }
+        },
+        {
+            "name": "clang-release",
+            "displayName": "Clang Release",
+            "inherits": "conf-common",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release",
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_CXX_FLAGS": "$env{BASE_CMAKE_CXX_FLAGS} -Wno-gnu-zero-variadic-macro-arguments -O3"
+            }
+        }
+    ]
+}
