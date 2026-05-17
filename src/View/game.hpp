@@ -6,7 +6,7 @@
 #include "UniformBuffer.hpp"
 #include "Camera2D.hpp"
 #include "Pipeline.hpp"
-#include <glm/ext/matrix_float4x4.hpp>
+#include "ShaderData.hpp"
 #include "Mesh/quadMesh.hpp"
 #include "Entity/entityPlayer.hpp"
 #include "uhcstd.hh"
@@ -14,14 +14,6 @@
 #include <vulkan/vulkan.h>
 
 class Buffer;
-
-struct ShaderData {
-    glm::mat4 projection{1.0f};
-    glm::mat4 view{1.0f};
-    glm::vec4 viewPosition{0.0f};
-    glm::vec4 viewDirection{0.0f};
-    float time{0.0f};
-};
 
 class GameView: public View {
 public:

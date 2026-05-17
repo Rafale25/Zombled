@@ -10,6 +10,8 @@
 #include <GLFW/glfw3.h>
 #include "imgui.h"
 
+#include "game.hpp"
+
 struct Vertex {
     glm::vec3 pos;
     glm::vec3 color;
@@ -93,6 +95,7 @@ void MenuView::onDraw(double time_since_start, float dt) {
 
         if (ImGui::Button("Join")) {
             logD("Joining...");
+            // ctx.viewPush(GameView());
         }
 
     ImGui::End();

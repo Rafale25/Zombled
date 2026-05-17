@@ -4,18 +4,10 @@
 #include "View.hpp"
 #include "UniformBuffer.hpp"
 #include "Pipeline.hpp"
-#include <glm/ext/matrix_float4x4.hpp>
 #include <vulkan/vulkan.h>
+#include "ShaderData.hpp"
 
 class Buffer;
-
-struct ShaderData {
-    glm::mat4 projection{1.0f};
-    glm::mat4 view{1.0f};
-    glm::vec4 viewPosition{0.0f};
-    glm::vec4 viewDirection{0.0f};
-    float time{0.0f};
-};
 
 class MenuView: public View {
 public:
