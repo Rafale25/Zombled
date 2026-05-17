@@ -32,6 +32,24 @@ struct ShaderData {
 //     get { return *pushConstant.u; }
 // }
 
+float3 toLinearSRGB(float3 sRGB)
+{
+    // bool3 cutoff = lessThan(sRGB, float3(0.04045));
+    float3 cutoff = float3(sRGB.lessThan(float3(0.04045)));
+    float3 higher = pow((sRGB + float3(0.055))/float3(1.055), float3(2.4));
+    float3 lower = sRGB/float3(12.92);
+    return lerp(higher, lower, cutoff);
+}
+
+float3 fromLinearToSRGB(float3 linearRGB)
+{
+    float3 cutoff = float3(linearRGB.lessThan(float3(0.0031308)));
+    float3 higher = float3(1.055)*pow(linearRGB, float3(1.0/2.4)) - float3(0.055);
+    float3 lower = linearRGB * float3(12.92);
+
+    return lerp(higher, lower, cutoff);
+}
+
 [shader("vertex")]
 VSOutput main(VSInput input, uniform ImmutablePtr<ShaderData> u, uint instanceIndex : SV_VulkanInstanceID) {
 // VSOutput main(VSInput input, uint instanceIndex: SV_VulkanInstanceID) {
@@ -47,13 +65,8 @@ VSOutput main(VSInput input, uniform ImmutablePtr<ShaderData> u, uint instanceIn
 
 [shader("fragment")]
 float4 main(VSOutput input, uniform ImmutablePtr<ShaderData> u) {
-// float4 main(VSOutput input) {
-    // float2 uv = fract(input.UV * 4);
-    // uv.x += u.time;
-    // uv.y -= abs(sin(u.time * 3));
     float3 color = textures[0].Sample(input.UV).rgb;
 
-    // float3 color = input.Color * (sin(u.time * 3.0) * 0.5 + 0.5);
-
+    color = fromLinearToSRGB(color);
     return float4(color, 1.0);
 }
