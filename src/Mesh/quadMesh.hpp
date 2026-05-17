@@ -16,8 +16,8 @@ namespace QuadMesh {
         glm::vec3 pos;
         glm::vec3 color;
         glm::vec2 uv;
-        int index;
+        uint32_t index;
     };
 
-    Mesh create(int x, int y, int w, int h);
+    Mesh create(int x, int y, int w, int h, uint32_t textureId);
 }

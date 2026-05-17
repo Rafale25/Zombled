@@ -2,15 +2,15 @@
 
 namespace QuadMesh {
 
-    Mesh create(int x, int y, int w, int h) {
+    Mesh create(int x, int y, int w, int h, uint32_t textureId) {
         Mesh mesh;
-    
+
         const VkDeviceSize indexCount{6};
         std::vector<Vertex> vertices{
-            {{-1 + x,  1 + y + h, 0}, {1, 0, 0}, {0, 0}, 0},
-            {{ 1 + x + w,  1 + y + h, 0}, {0, 1, 0}, {1, 0}, 0},
-            {{-1 + x, -1 + y, 0}, {0, 0, 1}, {0, 1}, 0},
-            {{ 1 + x + w, -1 + y, 0}, {0, 1, 1}, {1, 1}, 0},
+            {{-1 + x,  1 + y + h, 0}, {1, 0, 0}, {0, 0}, textureId},
+            {{ 1 + x + w,  1 + y + h, 0}, {0, 1, 0}, {1, 0}, textureId},
+            {{-1 + x, -1 + y, 0}, {0, 0, 1}, {0, 1}, textureId},
+            {{ 1 + x + w, -1 + y, 0}, {0, 1, 1}, {1, 1}, textureId},
         };
         std::vector<uint16_t> indices{
             0, 1, 2,

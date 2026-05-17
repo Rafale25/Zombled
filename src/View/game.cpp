@@ -17,6 +17,12 @@ GameView::~GameView() {
     m_pipelineSkybox.destroy();
 }
 
+const std::unordered_map<std::string, uint32_t> textures_ids = {
+    { "stone.png",   0 },
+    { "texture.png", 1 },
+    { "water.png",   2 },
+};
+
 GameView::GameView() {
     const Context& ctx = Context::instance();
 
@@ -26,7 +32,8 @@ GameView::GameView() {
 
         for (int j = 0; j < (int)List::size(l.tiles); j++) {
             MapLoader::MapTile mt = *List::get(l.tiles, j);
-            List::add(m_quadMesh, QuadMesh::create(mt.x, mt.y, mt.width, mt.height));
+            uint32_t textureId = textures_ids.at(mt.texture);
+            List::add(m_quadMesh, QuadMesh::create(mt.x, mt.y, mt.width, mt.height, textureId));
         }
     }
 
@@ -42,12 +49,13 @@ GameView::GameView() {
     m_descriptorSet.create(0, paths.size());
 
     for (uint32_t i = 0 ; i < paths.size() ; ++i) {
-        m_textures[i].createFromFile(paths[i]);
-        m_textures[i].createSampler(VK_FILTER_NEAREST, VK_FILTER_NEAREST);
-        int32_t _ = m_descriptorSet.addTexture(m_textures[i]);
-    }
+        Texture tex;
+        tex.createFromFile(paths[i]);
+        tex.createSampler(VK_FILTER_NEAREST, VK_FILTER_NEAREST);
+        int32_t _ = m_descriptorSet.addTexture(tex);
 
-    Geometry::cube(m_cubemapBufferVertex, glm::vec3(100.0f), glm::vec3(0.0f));
+        m_textures.push_back(tex);
+    }
 
     // m_pipelineSkybox = GraphicsPipelineBuilder{}
     //     .setShaders("skybox", "./src/skybox.slang")
@@ -129,17 +137,6 @@ void GameView::onDraw(double time_since_start, float dt) {
     pass.execute([&]() {
         VkDeviceSize _vOffset{ 0 };
 
-        // {
-        //     // Cubemap
-        //     vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipelineSkybox.pipeline);
-        //     m_descriptorSetCubemap.bind(cb, m_pipelineSkybox.layout);
-
-        //     vkCmdBindVertexBuffers(cb, 0, 1, &m_cubemapBufferVertex.buffer, &_vOffset);
-        //     m_uniformBuffer.pushConstant(m_pipelineSkybox.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
-
-        //     const VkDeviceSize vertexCount{6*6};
-        //     vkCmdDraw(cb, vertexCount, 1, 0, 0);
-        // }
         vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
         m_descriptorSet.bind(cb, m_pipeline.layout);
         m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
@@ -166,15 +163,9 @@ void GameView::onDraw(double time_since_start, float dt) {
 
         // player
         {
-            // vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
-            // m_descriptorSet.bind(cb, m_pipeline.layout);
-
             vkCmdBindVertexBuffers(cb, 0, 1, &m_player.mesh.m_bufferVertex.buffer, &_vOffset);
             vkCmdBindIndexBuffer(cb, m_player.mesh.m_bufferIndices.buffer, 0, VK_INDEX_TYPE_UINT16);
 
-            // m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
-
-            // logD("{}", m_player.position);
             glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_player.position - m_player.radius, 0));
             vkCmdPushConstants(
                 cb, m_pipeline.layout,
@@ -187,8 +178,8 @@ void GameView::onDraw(double time_since_start, float dt) {
         }
     });
 
-    DebugDraw::instance().drawCube({0, 0, 0});
-    DebugDraw::instance().drawAndFlush(cb, m_shaderData.projection * m_shaderData.view);
+    // DebugDraw::instance().drawCuboid({0, 0, 0}, {100, 100, 0});
+    // DebugDraw::instance().drawAndFlush(cb, m_shaderData.projection * m_shaderData.view);
 
     ImGui::ShowDemoWindow();
 }

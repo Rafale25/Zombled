@@ -20,7 +20,7 @@ public:
         glm::vec2 initialSize = glm::vec2(32.0f, 32.0f)
     ): Entity(initialPosition, initialSize)
     {
-        mesh = QuadMesh::create(initialPosition.x, initialPosition.y, initialSize.x, initialSize.y);
+        mesh = QuadMesh::create(initialPosition.x, initialPosition.y, initialSize.x, initialSize.y, 1);
     }
 
     void update(float dt, MapLoader::Map& map) override;
