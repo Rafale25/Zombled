@@ -114,7 +114,7 @@ void GameView::onUpdate(double time_since_start, float dt) {
     // auto newPos =  m_camera.getPosition() + delta;
     m_camera.setPosition(
         glm::vec3(
-            -m_player.position + m_player.radius + glm::vec2(ctx.m_framebufferWidth/4.0f, ctx.m_framebufferHeight/4.0f)
+            -m_player.position + m_player.size + glm::vec2(ctx.m_framebufferWidth/4.0f, ctx.m_framebufferHeight/4.0f)
             ,0.0f));
 }
 
@@ -184,7 +184,7 @@ void GameView::onDraw(double time_since_start, float dt) {
             // m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
 
             // logD("{}", m_player.position);
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_player.position, 0));
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_player.position - m_player.radius, 0));
             vkCmdPushConstants(
                 cb, m_pipeline.layout,
                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,

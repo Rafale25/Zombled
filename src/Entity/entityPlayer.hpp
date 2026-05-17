@@ -13,7 +13,7 @@ public:
     QuadMesh::Mesh mesh;
     glm::vec2 velocity;
     float radius = 16.0f;
-    float speed = 50.0f;
+    float speed = 200.0f;
 
     explicit EntityPlayer(
         glm::vec2 initialPosition = glm::vec2(),
