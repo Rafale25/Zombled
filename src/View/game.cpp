@@ -83,7 +83,7 @@ GameView::GameView() {
         .setPolygonMode(VK_POLYGON_MODE_FILL)
         .build();
 
-    m_camera = Camera2D({0, 0}, 0, 800, 0, 600);
+    m_camera = Camera2D({0, 0}, 0, ctx.m_framebufferWidth, 0, ctx.m_framebufferHeight);
     m_player = EntityPlayer({0, 0}, {32.0f, 32.0f});
 }
 
@@ -114,7 +114,7 @@ void GameView::onUpdate(double time_since_start, float dt) {
     // auto newPos =  m_camera.getPosition() + delta;
     m_camera.setPosition(
         glm::vec3(
-            -m_player.position + m_player.radius + glm::vec2(ctx.m_framebufferWidth/4.0f, ctx.m_framebufferHeight/4.0f)
+            -m_player.position + m_player.radius + glm::vec2(ctx.m_framebufferWidth/2.0f, ctx.m_framebufferHeight/2.0f)
             ,0.0f));
 }
 
@@ -184,7 +184,7 @@ void GameView::onDraw(double time_since_start, float dt) {
             // m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
 
             // logD("{}", m_player.position);
-            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_player.position, 0));
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_player.position - m_player.radius, 0));
             vkCmdPushConstants(
                 cb, m_pipeline.layout,
                 VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
@@ -214,5 +214,7 @@ void GameView::onMouseMotion(int x, int y, int dx, int dy) {
 }
 
 void GameView::onResize(int width, int height) {
+    m_camera.m_right = width;
+    m_camera.m_top = height;
     m_camera.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }
