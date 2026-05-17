@@ -1,9 +1,12 @@
 .DS_Store
-/build
-*.sh
 .cache
+.vs
+client/build/
+server/build/
+/build/
+/build/
+*.sh
 *.o
 *.exe
 *.bat
 *.ini
-.vs
