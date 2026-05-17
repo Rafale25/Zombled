@@ -24,7 +24,7 @@ GameView::GameView() {
     map = MapLoader::load(ASSETS_PATH "collision.2de");
     for (int i = 0; i < (int)List::size(map.layers); i++) {
         MapLoader::MapLayer l = *List::get(map.layers, i);
-        
+
         for (int j = 0; j < (int)List::size(l.tiles); j++) {
             MapLoader::MapTile mt = *List::get(l.tiles, j);
             List::add(m_quadMesh, QuadMesh::create(mt.x, mt.y, mt.width, mt.height));
@@ -68,7 +68,7 @@ GameView::GameView() {
     //     .setTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
     //     .setPolygonMode(VK_POLYGON_MODE_FILL)
     //     .build();
-    
+
     m_pipeline = GraphicsPipelineBuilder{}
         .setShaders("triangle", ASSETS_PATH "shader.slang")
         .addColorAttachmentFormat(Context::SWAPCHAIN_IMAGE_FORMAT)
@@ -82,7 +82,7 @@ GameView::GameView() {
         .setTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         .setPolygonMode(VK_POLYGON_MODE_FILL)
         .build();
-        
+
     m_camera = Camera2D({0, 0}, 0, 800, 0, 600);
     m_player = EntityPlayer({0, 0}, {32.0f, 32.0f});
 }
@@ -96,23 +96,26 @@ void GameView::onUpdate(double time_since_start, float dt) {
         0
     };
 
-    auto newPos =  m_camera.getPosition() + delta;
-    m_camera.setPosition(newPos);
-    
     m_shaderData.projection = m_camera.getProjection();
     m_shaderData.view = m_camera.getView();
     m_shaderData.viewPosition = glm::vec4(m_camera.getPosition(), 0);
     m_shaderData.viewDirection = glm::vec4(m_camera.forward(), 0);
     m_shaderData.time = time_since_start;
 
+    m_player.velocity.x -= delta.x;
+    m_player.velocity.y -= delta.y;
 
-    m_player.velocity.y = delta.x;
-    m_player.velocity.x = delta.y;
-
-    if (m_player.velocity.length() > 0.0f)
+    if (glm::length(m_player.velocity) > 0.001f)
         m_player.velocity = glm::normalize(m_player.velocity) * m_player.speed;
 
     m_player.update(dt, map);
+
+
+    // auto newPos =  m_camera.getPosition() + delta;
+    m_camera.setPosition(
+        glm::vec3(
+            -m_player.position + m_player.radius + glm::vec2(ctx.m_framebufferWidth/4.0f, ctx.m_framebufferHeight/4.0f)
+            ,0.0f));
 }
 
 void GameView::onDraw(double time_since_start, float dt) {
@@ -146,19 +149,24 @@ void GameView::onDraw(double time_since_start, float dt) {
         //     const VkDeviceSize vertexCount{6*6};
         //     vkCmdDraw(cb, vertexCount, 1, 0, 0);
         // }
+        vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
+        m_descriptorSet.bind(cb, m_pipeline.layout);
+        m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
 
         {
+            glm::mat4 model{1.0f};
+            vkCmdPushConstants(
+                cb, m_pipeline.layout,
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                16, sizeof(glm::mat4), &model);
+
+
             for (int i = 0; i < (int)List::size(m_quadMesh); i++) {
                 QuadMesh::Mesh cm = *List::get(m_quadMesh, i);
                 // quad image
-                vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
-                m_descriptorSet.bind(cb, m_pipeline.layout);
 
                 vkCmdBindVertexBuffers(cb, 0, 1, &cm.m_bufferVertex.buffer, &_vOffset);
                 vkCmdBindIndexBuffer(cb, cm.m_bufferIndices.buffer, 0, VK_INDEX_TYPE_UINT16);
-
-                m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
-
 
                 const VkDeviceSize indexCount{6};
                 vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
@@ -167,13 +175,20 @@ void GameView::onDraw(double time_since_start, float dt) {
 
         // player
         {
-            vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
-            m_descriptorSet.bind(cb, m_pipeline.layout);
+            // vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
+            // m_descriptorSet.bind(cb, m_pipeline.layout);
 
             vkCmdBindVertexBuffers(cb, 0, 1, &m_player.mesh.m_bufferVertex.buffer, &_vOffset);
             vkCmdBindIndexBuffer(cb, m_player.mesh.m_bufferIndices.buffer, 0, VK_INDEX_TYPE_UINT16);
 
-            m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+            // m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+
+            // logD("{}", m_player.position);
+            glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(m_player.position, 0));
+            vkCmdPushConstants(
+                cb, m_pipeline.layout,
+                VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
+                16, sizeof(glm::mat4), &model);
 
 
             const VkDeviceSize indexCount{6};

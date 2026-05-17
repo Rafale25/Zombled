@@ -13,7 +13,7 @@ public:
     QuadMesh::Mesh mesh;
     glm::vec2 velocity;
     float radius = 16.0f;
-    float speed = 0.25f;
+    float speed = 50.0f;
 
     explicit EntityPlayer(
         glm::vec2 initialPosition = glm::vec2(),
@@ -25,7 +25,7 @@ public:
 
     void update(float dt, MapLoader::Map& map) override;
     void render() override;
-    
+
 private:
     static constexpr int COLLISION_LAYER = 0;
 

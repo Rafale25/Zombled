@@ -5,6 +5,7 @@
 
 void EntityPlayer::update(float dt, MapLoader::Map& map) {
     moveAndCollide(dt, map);
+    velocity = glm::vec2(0.0f);
 
     //playerSprite.x = position.x - radius;
     //playerSprite.y = position.y - radius;
