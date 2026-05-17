@@ -8,6 +8,7 @@
 #include "Pipeline.hpp"
 #include <glm/ext/matrix_float4x4.hpp>
 #include "Mesh/quadMesh.hpp"
+#include "Entity/entityPlayer.hpp"
 #include "uhcstd.hh"
 
 #include <vulkan/vulkan.h>
@@ -39,7 +40,10 @@ private:
     ShaderData m_shaderData{};
     Pipeline m_pipelineSkybox{};
     Pipeline m_pipeline{};
+    MapLoader::Map map;
     List::It<QuadMesh::Mesh> m_quadMesh;
+    
+    EntityPlayer m_player;
 
     Buffer m_cubemapBufferVertex{};
 

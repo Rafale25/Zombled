@@ -21,7 +21,7 @@ GameView::~GameView() {
 GameView::GameView() {
     const Context& ctx = Context::instance();
 
-    MapLoader::Map map = MapLoader::load(ASSETS_PATH "collision.2de");
+    map = MapLoader::load(ASSETS_PATH "collision.2de");
     for (int i = 0; i < (int)List::size(map.layers); i++) {
         MapLoader::MapLayer l = *List::get(map.layers, i);
         
@@ -35,6 +35,7 @@ GameView::GameView() {
     gigachad.createFromFile(ASSETS_PATH "texture.png");
 
     gigachad.createSampler(VK_FILTER_NEAREST, VK_FILTER_NEAREST);
+
 
     // const char* paths[6] = {
     //     "./src/skybox/right.jpg",   // +X
@@ -83,6 +84,7 @@ GameView::GameView() {
         .build();
         
     m_camera = Camera2D({0, 0}, 0, 800, 0, 600);
+    m_player = EntityPlayer({0, 0}, {32.0f, 32.0f});
 }
 
 void GameView::onUpdate(double time_since_start, float dt) {
@@ -102,6 +104,15 @@ void GameView::onUpdate(double time_since_start, float dt) {
     m_shaderData.viewPosition = glm::vec4(m_camera.getPosition(), 0);
     m_shaderData.viewDirection = glm::vec4(m_camera.forward(), 0);
     m_shaderData.time = time_since_start;
+
+
+    m_player.velocity.y = delta.x;
+    m_player.velocity.x = delta.y;
+
+    if (m_player.velocity.length() > 0.0f)
+        m_player.velocity = glm::normalize(m_player.velocity) * m_player.speed;
+
+    m_player.update(dt, map);
 }
 
 void GameView::onDraw(double time_since_start, float dt) {
@@ -152,6 +163,21 @@ void GameView::onDraw(double time_since_start, float dt) {
                 const VkDeviceSize indexCount{6};
                 vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
             }
+        }
+
+        // player
+        {
+            vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
+            m_descriptorSet.bind(cb, m_pipeline.layout);
+
+            vkCmdBindVertexBuffers(cb, 0, 1, &m_player.mesh.m_bufferVertex.buffer, &_vOffset);
+            vkCmdBindIndexBuffer(cb, m_player.mesh.m_bufferIndices.buffer, 0, VK_INDEX_TYPE_UINT16);
+
+            m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+
+
+            const VkDeviceSize indexCount{6};
+            vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
         }
     });
 
