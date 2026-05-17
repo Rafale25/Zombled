@@ -5,7 +5,7 @@ struct VSInput {
     float3 Pos;
     float3 Color;
     float2 UV;
-    int index;
+    uint32_t textureIndex;
 };
 
 [[vk::binding(0, 0)]] Sampler2D textures[];
@@ -14,7 +14,7 @@ struct VSOutput {
     float4 Pos : SV_POSITION;
     float3 Color;
     float2 UV;
-    // uint32_t InstanceIndex;
+    uint32_t textureIndex;
 };
 
 struct ShaderData {
@@ -49,6 +49,7 @@ VSOutput main(VSInput input, uint instanceIndex: SV_VulkanInstanceID) {
     output.Pos = u.projection * u.view * pc.model * float4(input.Pos.xyz, 1.0);
     output.Color = input.Color;
     output.UV = input.UV;
+    output.textureIndex = input.textureIndex;
 
     return output;
 }
@@ -56,7 +57,7 @@ VSOutput main(VSInput input, uint instanceIndex: SV_VulkanInstanceID) {
 [shader("fragment")]
 // float4 main(VSOutput input, uniform ImmutablePtr<ShaderData> u) {
 float4 main(VSOutput input) {
-    float3 color = textures[0].Sample(input.UV).rgb;
+    float3 color = textures[input.textureIndex].Sample(input.UV).rgb;
 
     color = fromLinearToSRGB(color);
     return float4(color, 1.0);

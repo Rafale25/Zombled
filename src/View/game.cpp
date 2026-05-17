@@ -15,7 +15,6 @@
 GameView::~GameView() {
     m_pipeline.destroy();
     m_pipelineSkybox.destroy();
-    gigachad.destroy();
 }
 
 GameView::GameView() {
@@ -32,29 +31,21 @@ GameView::GameView() {
     }
 
     m_uniformBuffer.create(sizeof(ShaderData));
-    gigachad.createFromFile(ASSETS_PATH "texture.png");
-
-    gigachad.createSampler(VK_FILTER_NEAREST, VK_FILTER_NEAREST);
 
 
-    // const char* paths[6] = {
-    //     "./src/skybox/right.jpg",   // +X
-    //     "./src/skybox/left.jpg",    // -X
-    //     "./src/skybox/top.jpg",     // +Y
-    //     "./src/skybox/bottom.jpg",  // -Y
-    //     "./src/skybox/front.jpg",   // +Z
-    //     "./src/skybox/back.jpg",    // -2
-    // };
+    std::array<const char*, 3> paths = {
+        ASSETS_PATH "stone.png",
+        ASSETS_PATH "texture.png",
+        ASSETS_PATH "water.png",
+    };
 
-    // m_cubemap.createFromFileCubemap(paths);
-    // m_cubemap.createSampler();
+    m_descriptorSet.create(0, paths.size());
 
-    // m_descriptorSetCubemap.create(0, 1);
-    // m_descriptorSetCubemap.addTexture(m_cubemap.sampler, m_cubemap.imageView);
-
-    m_descriptorSet.create(0, 1);
-    int32_t _textureIndex = m_descriptorSet.addTexture(gigachad);
-
+    for (uint32_t i = 0 ; i < paths.size() ; ++i) {
+        m_textures[i].createFromFile(paths[i]);
+        m_textures[i].createSampler(VK_FILTER_NEAREST, VK_FILTER_NEAREST);
+        int32_t _ = m_descriptorSet.addTexture(m_textures[i]);
+    }
 
     Geometry::cube(m_cubemapBufferVertex, glm::vec3(100.0f), glm::vec3(0.0f));
 
@@ -78,7 +69,7 @@ GameView::GameView() {
         .addVertexAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(QuadMesh::Vertex, pos))
         .addVertexAttribute(1, 0, VK_FORMAT_R32G32B32_SFLOAT, offsetof(QuadMesh::Vertex, color))
         .addVertexAttribute(2, 0, VK_FORMAT_R32G32_SFLOAT,    offsetof(QuadMesh::Vertex, uv))
-        .addVertexAttribute(3, 0, VK_FORMAT_R32_SINT,         offsetof(QuadMesh::Vertex, index))
+        .addVertexAttribute(3, 0, VK_FORMAT_R32_UINT,         offsetof(QuadMesh::Vertex, index))
         .setTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
         .setPolygonMode(VK_POLYGON_MODE_FILL)
         .build();

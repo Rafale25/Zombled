@@ -42,15 +42,13 @@ private:
     Pipeline m_pipeline{};
     MapLoader::Map map;
     List::It<QuadMesh::Mesh> m_quadMesh;
-    
+
     EntityPlayer m_player;
 
     Buffer m_cubemapBufferVertex{};
 
-    Texture gigachad{};
-    // Texture m_cubemap{};
+    std::vector<Texture> m_textures;
     DescriptorSet m_descriptorSet{};
-    // DescriptorSet m_descriptorSetCubemap{};
 
     Camera2D m_camera{};
 };
