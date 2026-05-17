@@ -3,9 +3,9 @@
 
 namespace TcpClient {
 #if defined(_WIN32) || defined(_WIN64)
-    TcpClient::It create(char* ip, short port) {
+    TcpClient::It create(const char* ip, short port) {
         TcpClient::It client;
-        
+
         struct sockaddr_in server_addr;
 
         WSADATA wsaData;
@@ -48,7 +48,7 @@ namespace TcpClient {
         WSACleanup();
     };
 
-    unsigned char write(TcpClient::It& client, char* buffer, unsigned int size) {
+    unsigned char write(TcpClient::It& client, const char* buffer, unsigned int size) {
         if (client.sockfd == INVALID_SOCKET) return 1;
         send(client.sockfd, buffer, size, 0);
 
@@ -77,9 +77,9 @@ namespace TcpClient {
         return 1;
     };
 #else
-    TcpClient::It create(char* ip, short port) {
+    TcpClient::It create(const char* ip, short port) {
         TcpClient::It client;
-        
+
         struct sockaddr_in server_addr;
 
         client.sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -113,9 +113,9 @@ namespace TcpClient {
         client.sockfd = -1;
     };
 
-    unsigned char write(TcpClient::It& client, char* buffer, unsigned int size) {
+    unsigned char write(TcpClient::It& client, const char* buffer, unsigned int size) {
         if (client.sockfd < 0) return 0;
-        
+
         send(client.sockfd, buffer, size, 0);
 
         return 1;

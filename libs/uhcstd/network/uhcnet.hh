@@ -31,7 +31,7 @@ namespace TcpClient {
     /// @param ip Server IP address
     /// @param port Server port number
     /// @returns Connected client object
-    TcpClient::It create(char* ip, short port);
+    TcpClient::It create(const char* ip, short port);
     /// Destroy a TCP client and close the connection
     /// @param client The TCP client
     void destroy(TcpClient::It& client);
@@ -40,7 +40,7 @@ namespace TcpClient {
     /// @param buffer Data to send
     /// @param size Number of bytes to send
     /// @returns Non-zero on success
-    unsigned char write(TcpClient::It& client, char* buffer, unsigned int size);
+    unsigned char write(TcpClient::It& client, const char* buffer, unsigned int size);
     /// Read data from the server (non-blocking, may be partial)
     /// @param client The TCP client
     /// @param buffer Receive buffer
@@ -89,7 +89,7 @@ namespace TcpServer {
     /// @param buffer Data to send
     /// @param size Number of bytes to send
     /// @returns Non-zero on success
-    unsigned char write(TcpClient::It& client, char* buffer, unsigned int size);
+    unsigned char write(TcpClient::It& client, const char* buffer, unsigned int size);
     /// Read data from a client (non-blocking, may be partial)
     /// @param client Source client
     /// @param buffer Receive buffer
