@@ -28,7 +28,7 @@ MenuView::MenuView() {
     m_uniformBuffer.create(sizeof(ShaderData));
 
     m_pipeline = GraphicsPipelineBuilder{}
-        .setShaders("triangle", ASSETS_PATH "menuBackground.slang")
+        .setShaders("menuBackground", ASSETS_PATH "menuBackground.slang")
         .addColorAttachmentFormat(Context::SWAPCHAIN_IMAGE_FORMAT)
         .setDepthAttachmentFormat(ctx.getDepthImageFormat())
         .addVertexBinding(0, sizeof(float) * 5)
@@ -94,8 +94,9 @@ void MenuView::onDraw(double time_since_start, float dt) {
         ImGui::InputText("ip", buffer_ip, sizeof(buffer_ip));
 
         if (ImGui::Button("Join")) {
-            logD("Joining...");
-            // ctx.viewPush(GameView());
+            // logD("Joining...");
+            static GameView gameView;
+            ctx.viewPush(gameView);
         }
 
     ImGui::End();
