@@ -114,7 +114,7 @@ void GameView::onUpdate(double time_since_start, float dt) {
     // auto newPos =  m_camera.getPosition() + delta;
     m_camera.setPosition(
         glm::vec3(
-            -m_player.position + m_player.size + glm::vec2(ctx.m_framebufferWidth/2.0f, ctx.m_framebufferHeight/2.0f)
+            -m_player.position + m_player.radius + glm::vec2(ctx.m_framebufferWidth/2.0f, ctx.m_framebufferHeight/2.0f)
             ,0.0f));
 }
 
@@ -214,5 +214,7 @@ void GameView::onMouseMotion(int x, int y, int dx, int dy) {
 }
 
 void GameView::onResize(int width, int height) {
+    m_camera.m_right = width;
+    m_camera.m_top = height;
     m_camera.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }
