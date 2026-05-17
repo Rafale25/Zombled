@@ -1,6 +1,7 @@
 .DS_Store
 .cache
 .vs
+.claude
 client/build/
 server/build/
 /build/
