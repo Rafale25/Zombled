@@ -2,9 +2,7 @@
 
 #include "Buffer.hpp"
 #include "View.hpp"
-#include "DescriptorSet.hpp"
 #include "UniformBuffer.hpp"
-#include "CameraFps.hpp"
 #include "Pipeline.hpp"
 #include <glm/ext/matrix_float4x4.hpp>
 #include <vulkan/vulkan.h>
@@ -34,15 +32,8 @@ public:
 private:
     UniformBuffer m_uniformBuffer{};
     ShaderData m_shaderData{};
-    Pipeline m_pipelineSkybox{};
     Pipeline m_pipeline{};
+
     Buffer m_bufferVertex{};
     Buffer m_bufferIndices{};
-
-    Buffer m_cubemapBufferVertex{};
-
-    Texture gigachad{};
-    DescriptorSet m_descriptorSet{};
-
-    FPSCamera m_camera{};
 };

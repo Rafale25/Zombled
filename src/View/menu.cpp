@@ -18,8 +18,6 @@ struct Vertex {
 
 MenuView::~MenuView() {
     m_pipeline.destroy();
-    m_pipelineSkybox.destroy();
-    gigachad.destroy();
 }
 
 MenuView::MenuView() {
@@ -27,44 +25,65 @@ MenuView::MenuView() {
 
     m_uniformBuffer.create(sizeof(ShaderData));
 
-    m_camera = { CameraFpsCreateInfo{
-        .aspect_ratio= ctx.aspectRatio(),
-        .fov = 70.0f,
-        .yaw = -glm::pi<float>()/2.0f,
-        .nearPlane=0.1,
-        .farPlane=1000.0,
-        .isScreenYInverted = true
-    }};
+    m_pipeline = GraphicsPipelineBuilder{}
+        .setShaders("triangle", ASSETS_PATH "menuBackground.slang")
+        .addColorAttachmentFormat(Context::SWAPCHAIN_IMAGE_FORMAT)
+        .setDepthAttachmentFormat(ctx.getDepthImageFormat())
+        .addVertexBinding(0, sizeof(float) * 5)
+        // .addDescriptorLayout(m_descriptorSet.getLayout())
+        .addVertexAttribute(0, 0, VK_FORMAT_R32G32B32_SFLOAT, sizeof(float) * 0)
+        .addVertexAttribute(1, 0, VK_FORMAT_R32G32_SFLOAT,    sizeof(float) * 3)
+        .setTopology(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST)
+        .setPolygonMode(VK_POLYGON_MODE_FILL)
+        .build();
+
+    Geometry::quadFullscreen(m_bufferVertex, m_bufferIndices);
 }
 
 void MenuView::onUpdate(double time_since_start, float dt) {
     const Context& ctx = Context::instance();
-
-    m_camera.update(dt);
-
-    glm::vec3 delta = {
-        ctx.isKeyDown(GLFW_KEY_A)            - ctx.isKeyDown(GLFW_KEY_D),
-        ctx.isKeyDown(GLFW_KEY_LEFT_CONTROL) - ctx.isKeyDown(GLFW_KEY_SPACE),
-        ctx.isKeyDown(GLFW_KEY_W)            - ctx.isKeyDown(GLFW_KEY_S)
-    };
-    if (!ctx.isCursorEnabled() && !ImGui::GetIO().WantCaptureKeyboard)
-        m_camera.move(delta);
-
-    m_shaderData.projection = m_camera.getProjection();
-    m_shaderData.view = m_camera.getView();
-    m_shaderData.viewPosition = glm::vec4(m_camera.getPosition(), 0);
-    m_shaderData.viewDirection = glm::vec4(m_camera.forward(), 0);
-    m_shaderData.time = time_since_start;
 }
 
 void MenuView::onDraw(double time_since_start, float dt) {
     VkCommandBuffer cb = Context::instance().getCommandBuffer();
     Context& ctx = Context::instance();
 
-    m_uniformBuffer.upload(&m_shaderData, sizeof(ShaderData));
+    auto pass = RenderPass()
+        .defaultViewportScissor()
+        .color(
+            ctx.getSwapchainImage(),
+            ctx.getSwapchainImageView(),
+            { .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR })
+        .depth(
+            ctx.getDepthTexture(),
+            { .loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR });
+
+    pass.execute([&]() {
+        VkDeviceSize _vOffset{ 0 };
+        vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
+        vkCmdBindVertexBuffers(cb, 0, 1, &m_bufferVertex.buffer, &_vOffset);
+        vkCmdBindIndexBuffer(cb, m_bufferIndices.buffer, 0, VK_INDEX_TYPE_UINT16);
+        const VkDeviceSize indexCount{ 6 };
+        vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
+    });
+
+    // m_pipeline
 
     DebugDraw::instance().drawCube({0, 0, 0});
     DebugDraw::instance().drawAndFlush(cb, m_shaderData.projection * m_shaderData.view);
+
+    static char buffer_username[256] = {};
+    static char buffer_ip[256] = {};
+
+    ImGuiWindowFlags window_flags = 0;
+    window_flags |= ImGuiWindowFlags_NoBackground;
+    window_flags |= ImGuiWindowFlags_NoTitleBar;
+
+    // bool open_ptr = true;
+    ImGui::Begin("##FullscreenWindow", nullptr, window_flags);
+        ImGui::InputText("username", buffer_username, sizeof(buffer_username));
+        ImGui::InputText("ip", buffer_ip, sizeof(buffer_ip));
+    ImGui::End();
 
     ImGui::ShowDemoWindow();
 }
@@ -78,10 +97,10 @@ void MenuView::onKeyPress(int key) {
 }
 
 void MenuView::onMouseMotion(int x, int y, int dx, int dy) {
-    if (!Context::instance().isCursorEnabled())
-        m_camera.onMouseMotion(x, y, dx, dy);
+    // if (!Context::instance().isCursorEnabled())
+    //     m_camera.onMouseMotion(x, y, dx, dy);
 }
 
 void MenuView::onResize(int width, int height) {
-    m_camera.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+    // m_camera.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }
