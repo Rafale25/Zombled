@@ -1,22 +1,15 @@
-#include "Context.hpp"
 #include "menu.hpp"
+#include "game.hpp"
+#include "Context.hpp"
 #include "UniformBuffer.hpp"
 #include "RenderPass.hpp"
 #include "GraphicsPipelineBuilder.hpp"
 #include "Logger.hpp"
 #include "geometry.hpp"
-#include "debugdraw/DebugDraw.hpp"
 #include <glm/ext/vector_float3.hpp>
 #include <GLFW/glfw3.h>
 #include "imgui.h"
 
-#include "game.hpp"
-
-struct Vertex {
-    glm::vec3 pos;
-    glm::vec3 color;
-    glm::vec2 uv;
-};
 
 MenuView::~MenuView() {
     m_pipeline.destroy();
@@ -69,11 +62,6 @@ void MenuView::onDraw(double time_since_start, float dt) {
         vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
     });
 
-    // m_pipeline
-
-    DebugDraw::instance().drawCube({0, 0, 0});
-    DebugDraw::instance().drawAndFlush(cb, m_shaderData.projection * m_shaderData.view);
-
     static char buffer_username[256] = {};
     static char buffer_ip[256] = {};
 
@@ -85,7 +73,6 @@ void MenuView::onDraw(double time_since_start, float dt) {
     window_flags |= ImGuiWindowFlags_NoMove;
     window_flags |= ImGuiWindowFlags_NoResize;
 
-    // bool open_ptr = true;
     ImGui::SetNextWindowPos((ImVec2){0, 0});
     ImGui::SetNextWindowSize((ImVec2){400, 600});
 
@@ -113,10 +100,7 @@ void MenuView::onKeyPress(int key) {
 }
 
 void MenuView::onMouseMotion(int x, int y, int dx, int dy) {
-    // if (!Context::instance().isCursorEnabled())
-    //     m_camera.onMouseMotion(x, y, dx, dy);
 }
 
 void MenuView::onResize(int width, int height) {
-    // m_camera.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 }
