@@ -5,7 +5,7 @@ namespace TcpServer {
 #if defined(_WIN32) || defined(_WIN64)
     TcpServer::It create(short port, unsigned short slots) {
         TcpServer::It server;
-        
+
         struct sockaddr_in serverAddress;
         WSADATA wsaData;
 
@@ -43,7 +43,7 @@ namespace TcpServer {
         server.running = 0;
     };
 
-    void listen(TcpServer::It& server, void (*callback)(TcpClient::It*)) {
+    void listen(TcpServer::It& server, void (*callback)(TcpClient::It)) {
         if (::listen(server.sockfd, server.slots) == SOCKET_ERROR) {
             Log::warn("Server listen failed");
             destroy(server);
@@ -62,15 +62,15 @@ namespace TcpServer {
                 continue;
             };
 
-            callback(&client);
+            callback(client);
         };
     };
 
     unsigned char write(TcpClient::It& client, const char* buffer, unsigned int size) {
         if (client.sockfd == INVALID_SOCKET) return 0;
-        
+
         send(client.sockfd, (char*)buffer, size, 0);
-        
+
         return 1;
     };
 
@@ -107,7 +107,7 @@ namespace TcpServer {
 #else
     TcpServer::It create(short port, unsigned short slots) {
         TcpServer::It server;
-        
+
         struct sockaddr_in serverAddress;
 
         server.sockfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -137,7 +137,7 @@ namespace TcpServer {
         server.running = 0;
     };
 
-    void listen(TcpServer::It& server, void (*callback)(TcpClient::It*)) {
+    void listen(TcpServer::It& server, void (*callback)(TcpClient::It)) {
         if (::listen(server.sockfd, server.slots) < 0) {
             Log::warn("Server listen failed");
             destroy(server);
@@ -156,15 +156,15 @@ namespace TcpServer {
                 continue;
             };
 
-            callback(&client);
+            callback(client);
         };
     };
 
     unsigned char write(TcpClient::It& client, const char* buffer, unsigned int size) {
         if (client.sockfd < 0) return 0;
-        
+
         send(client.sockfd, buffer, size, MSG_NOSIGNAL);
-        
+
         return 1;
     };
 

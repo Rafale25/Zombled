@@ -98,18 +98,21 @@ void MenuView::onDraw(double time_since_start, float dt) {
 
 void* networkThread(void* arg) {
     using namespace Zombled::Packets;
+    logD("networkThread Start");
 
     TcpClient::It client = *(TcpClient::It*)arg;
 
     char buffer[1024] = {};
 
     while (client.sockfd) {
+        logD("readAll 1");
         TcpClient::readAll(client, buffer, 1);
         uint8_t value = buffer[0];
         Server::PacketId packetId = (Server::PacketId)value;
 
         uint8_t size = Server::packetsSize.at(packetId);
-        TcpClient::readAll(client, buffer + 1, size);
+        logD("readAll size");
+        TcpClient::readAll(client, buffer + 1, size - 1);
 
         switch (packetId) {
             case Server::PacketId::IDENTIFICATION:
@@ -132,15 +135,15 @@ void* networkThread(void* arg) {
 void MenuView::connectToServer() {
     uint16_t port = 22222;
 
-    auto it = TcpClient::create(buffer_ip, port);
-    if (it.sockfd != -1) {
-        g_gameState.networkClient = it;
+    g_gameState.networkClient = TcpClient::create(buffer_ip, port);
+    if (g_gameState.networkClient.sockfd != -1) {
+        // g_gameState.networkClient = it;
         static GameView gameView;
         Context::instance().viewPush(gameView);
 
+        logI("Successfuly connected to {}:{}", buffer_ip, port);
         g_gameState.networkThread = Thread::start(networkThread, &g_gameState.networkClient);
 
-        logI("Successfuly connected to {}:{}", buffer_ip, port);
     } else {
         logE("Failed to connect to {}:{}", buffer_ip, port);
     }

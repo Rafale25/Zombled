@@ -7,14 +7,21 @@ static uint32_t entityId = 0;
 void* clientThread(void* arg) {
     TcpClient::It client = *(TcpClient::It*)arg;
 
+    Log::debug("before");
+
     UhcBuffer::It buffer;
     buffer.handle = malloc(5);
     UhcBuffer::setOrder(buffer, UHC_BIG_ENDIAN);
     UhcBuffer::reset(buffer);
     UhcBuffer::putU8(buffer, 0x00);
     UhcBuffer::putU32(buffer, entityId);
-    
+
+    Log::debug("after malloc");
+
     TcpServer::write(client, (const char*)buffer.handle, 5);
+
+    Log::debug("after write");
+
     entityId++;
     free(buffer.handle);
 
@@ -27,15 +34,15 @@ void* clientThread(void* arg) {
     return NULL;
 }
 
-void serverAccept(TcpClient::It* client) {
+void serverAccept(TcpClient::It client) {
     Log::info("New client joined");
-    
-    Thread::It thread = Thread::start(clientThread, client);
+
+    Thread::It thread = Thread::start(clientThread, &client);
 }
 
 void* serverListen(void* arg) {
     Log::info("Server listening");
-    
+
     TcpServer::It server = *(TcpServer::It*)arg;
 
     while (server.running) {

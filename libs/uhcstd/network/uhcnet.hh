@@ -83,7 +83,7 @@ namespace TcpServer {
     /// Start accepting connections, calling a callback for each new client
     /// @param server The TCP server
     /// @param callback Function called with each new client
-    void listen(TcpServer::It& server, void (*callback)(TcpClient::It*));
+    void listen(TcpServer::It& server, void (*callback)(TcpClient::It));
     /// Send data to a specific client
     /// @param client Target client
     /// @param buffer Data to send
