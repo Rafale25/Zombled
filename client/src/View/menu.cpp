@@ -72,8 +72,8 @@ void MenuView::onDraw(double time_since_start, float dt) {
         vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
     });
 
-    static char buffer_username[256] = {};
-    static char buffer_ip[256] = {};
+    static char buffer_username[256] = {"Player"};
+    static char buffer_ip[256] = {"192.168.1.197"};
 
     ImGuiWindowFlags window_flags = 0;
     window_flags |= ImGuiWindowFlags_NoBackground;
@@ -91,16 +91,16 @@ void MenuView::onDraw(double time_since_start, float dt) {
         ImGui::InputText("ip", buffer_ip, sizeof(buffer_ip));
 
         if (ImGui::Button("Join")) {
-            const char* ip = "127.0.0.1";
             uint16_t port = 22222;
-            auto it = TcpClient::create(ip, port);
+
+            auto it = TcpClient::create(buffer_ip, port);
             if (it.sockfd != -1) {
                 g_gameState.networkClient = it;
                 static GameView gameView;
                 ctx.viewPush(gameView);
-                logI("Successfuly connected to {}:{}", ip, port);
+                logI("Successfuly connected to {}:{}", buffer_ip, port);
             } else {
-                logE("Failed to connect to {}:{}", ip, port);
+                logE("Failed to connect to {}:{}", buffer_ip, port);
             }
         }
 
