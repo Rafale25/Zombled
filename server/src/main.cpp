@@ -2,8 +2,21 @@
 #include "uhcio.hh"
 #include "uhcstd.hh"
 
+static uint32_t entityId = 0;
+
 void* clientThread(void* arg) {
     TcpClient::It client = *(TcpClient::It*)arg;
+
+    UhcBuffer::It buffer;
+    buffer.handle = malloc(sizeof(1024));
+    UhcBuffer::setOrder(buffer, UHC_BIG_ENDIAN);
+    UhcBuffer::reset(buffer);
+    UhcBuffer::putU8(buffer, 0x00);
+    UhcBuffer::putU32(buffer, entityId);
+    
+    TcpServer::write(client, (const char*)buffer.handle, 5);
+    entityId++;
+    free(buffer.handle);
 
     while (client.sockfd) {
         // Read
