@@ -8,7 +8,7 @@ void* clientThread(void* arg) {
     TcpClient::It client = *(TcpClient::It*)arg;
 
     UhcBuffer::It buffer;
-    buffer.handle = malloc(sizeof(1024));
+    buffer.handle = malloc(1024);
     UhcBuffer::setOrder(buffer, UHC_BIG_ENDIAN);
     UhcBuffer::reset(buffer);
     UhcBuffer::putU8(buffer, 0x00);

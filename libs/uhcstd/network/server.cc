@@ -66,7 +66,7 @@ namespace TcpServer {
         };
     };
 
-    unsigned char write(TcpClient::It& client, char* buffer, unsigned int size) {
+    unsigned char write(TcpClient::It& client, const char* buffer, unsigned int size) {
         if (client.sockfd == INVALID_SOCKET) return 0;
         
         send(client.sockfd, (char*)buffer, size, 0);
@@ -160,7 +160,7 @@ namespace TcpServer {
         };
     };
 
-    unsigned char write(TcpClient::It& client, char* buffer, unsigned int size) {
+    unsigned char write(TcpClient::It& client, const char* buffer, unsigned int size) {
         if (client.sockfd < 0) return 0;
         
         send(client.sockfd, buffer, size, MSG_NOSIGNAL);
