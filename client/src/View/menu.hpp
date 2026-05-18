@@ -21,6 +21,9 @@ public:
     void onKeyPress(int key);
     void onMouseMotion(int x, int y, int dx, int dy);
 
+    void connectToServer();
+
+
 private:
     UniformBuffer m_uniformBuffer{};
     ShaderData m_shaderData{};
@@ -28,4 +31,7 @@ private:
 
     Buffer m_bufferVertex{};
     Buffer m_bufferIndices{};
+
+    char buffer_username[256] = {"Player"};
+    char buffer_ip[256] = {"192.168.1.197"};
 };

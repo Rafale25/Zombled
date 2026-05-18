@@ -72,9 +72,6 @@ void MenuView::onDraw(double time_since_start, float dt) {
         vkCmdDrawIndexed(cb, indexCount, 1, 0, 0, 0);
     });
 
-    static char buffer_username[256] = {"Player"};
-    static char buffer_ip[256] = {"192.168.1.197"};
-
     ImGuiWindowFlags window_flags = 0;
     window_flags |= ImGuiWindowFlags_NoBackground;
     window_flags |= ImGuiWindowFlags_NoTitleBar;
@@ -91,22 +88,47 @@ void MenuView::onDraw(double time_since_start, float dt) {
         ImGui::InputText("ip", buffer_ip, sizeof(buffer_ip));
 
         if (ImGui::Button("Join")) {
-            uint16_t port = 22222;
-
-            auto it = TcpClient::create(buffer_ip, port);
-            if (it.sockfd != -1) {
-                g_gameState.networkClient = it;
-                static GameView gameView;
-                ctx.viewPush(gameView);
-                logI("Successfuly connected to {}:{}", buffer_ip, port);
-            } else {
-                logE("Failed to connect to {}:{}", buffer_ip, port);
-            }
+            connectToServer();
         }
 
     ImGui::End();
 
     ImGui::ShowDemoWindow();
+}
+
+void* networkThread(void* arg) {
+    TcpClient::It client = *(TcpClient::It*)arg;
+
+    char buffer[1024] = {};
+
+    while (client.sockfd) {
+        TcpClient::readAll(client, buffer, 1);
+        uint8_t packetId = buffer[0];
+
+        switch (packetId) {
+            case 0:
+                break;
+        }
+    }
+
+    return nullptr;
+}
+
+void MenuView::connectToServer() {
+    uint16_t port = 22222;
+
+    auto it = TcpClient::create(buffer_ip, port);
+    if (it.sockfd != -1) {
+        g_gameState.networkClient = it;
+        static GameView gameView;
+        Context::instance().viewPush(gameView);
+
+        g_gameState.networkThread = Thread::start(networkThread, &g_gameState.networkClient);
+
+        logI("Successfuly connected to {}:{}", buffer_ip, port);
+    } else {
+        logE("Failed to connect to {}:{}", buffer_ip, port);
+    }
 }
 
 void MenuView::onKeyPress(int key) {

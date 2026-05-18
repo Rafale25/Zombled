@@ -1,11 +1,12 @@
 #pragma once
 
-// Client bound (packets sent to client)
-
 #include <cstdint>
+#include <unordered_map>
 
 namespace Zombled::Packets {
     namespace Server {
+
+#pragma pack(push, 1)
 
         struct Identification {
             uint8_t id;
@@ -36,9 +37,27 @@ namespace Zombled::Packets {
             float z;
             float rot;
         };
+
+#pragma pack(pop)
+
+        enum PacketId {
+            IDENTIFICATION = 0x00,
+            ENTITY_ADD = 0x01,
+            ENTITY_REMOVE = 0x02,
+            ENTITY_MOVE = 0x03,
+        };
+
+        const std::unordered_map<PacketId, uint32_t> packetsSize = {
+            { IDENTIFICATION, sizeof(Identification) },
+            { ENTITY_ADD,     sizeof(EntityAdd)      },
+            { ENTITY_REMOVE,  sizeof(EntityRemove)   },
+            { ENTITY_MOVE,    sizeof(EntityMove)     },
+        };
     };
 
     namespace Client {
+
+#pragma pack(push, 1)
 
         struct EntityMove {
             uint8_t id;
@@ -48,8 +67,8 @@ namespace Zombled::Packets {
             float rot;
         };
 
+#pragma pack(pop)
+
     };
+
 };
-
-
-// Server bound (packets sent to server)

@@ -4,10 +4,8 @@
 #include "zombledPackets.hpp"
 
 struct GameState {
-    TcpClient::It networkClient{};
-
-    // Entity
-    // ...
+    TcpClient::It networkClient;
+    Thread::It networkThread;
 };
 
 inline GameState g_gameState{};
