@@ -4,6 +4,7 @@
 #include "RenderPass.hpp"
 #include "GraphicsPipelineBuilder.hpp"
 #include "Logger.hpp"
+#include "View/GameState.hpp"
 #include "geometry.hpp"
 #include "debugdraw/DebugDraw.hpp"
 #include <glm/ext/vector_float3.hpp>
@@ -178,8 +179,11 @@ void GameView::onDraw(double time_since_start, float dt) {
         }
     });
 
-    // DebugDraw::instance().drawCuboid({0, 0, 0}, {100, 100, 0});
-    // DebugDraw::instance().drawAndFlush(cb, m_shaderData.projection * m_shaderData.view);
+    for (const auto& e : g_gameState.entities) {
+        DebugDraw::instance().drawCuboid(glm::vec3(e.second->position, 0), {32, 32, 0});
+    }
+
+    DebugDraw::instance().drawAndFlush(cb, m_shaderData.projection * m_shaderData.view);
 
     ImGui::ShowDemoWindow();
 }

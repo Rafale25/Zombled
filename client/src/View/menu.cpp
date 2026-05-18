@@ -137,6 +137,14 @@ void* networkThread(void* arg) {
                 packet.z = UhcBuffer::getF32(buf);
                 packet.rot = UhcBuffer::getF32(buf);
                 // packet.name = UhcBuffer::get(buf);
+
+                // if (packet.entityType == 0)
+
+                g_gameState.entities[packet.entityId] = std::make_unique<EntityPlayer>();
+
+                Entity& player = *g_gameState.entities.at(packet.entityId);
+                player.id = packet.entityId;
+                player.position = glm::vec2(packet.x, packet.y);
                 break;
             }
             case Server::PacketId::ENTITY_REMOVE:
@@ -146,6 +154,8 @@ void* networkThread(void* arg) {
                 UhcBuffer::reset(buf);
                 packet.id = UhcBuffer::getU8(buf);
                 packet.entityId = UhcBuffer::getU32(buf);
+
+                g_gameState.entities.erase(packet.entityId);
                 break;
             }
             case Server::PacketId::ENTITY_MOVE:
@@ -159,6 +169,10 @@ void* networkThread(void* arg) {
                 packet.y = UhcBuffer::getF32(buf);
                 packet.z = UhcBuffer::getF32(buf);
                 packet.rot = UhcBuffer::getF32(buf);
+
+                Entity& e = *g_gameState.entities.at(packet.entityId);
+                e.position = glm::vec2(packet.x, packet.y);
+                e.rot = packet.rot;
                 break;
             }
         }
