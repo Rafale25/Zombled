@@ -102,7 +102,7 @@ void GameView::onUpdate(double time_since_start, float dt) {
     buffer.handle = buf;
 
     UhcBuffer::reset(buffer);
-    UhcBuffer::putU8(buffer, 0x03);
+    UhcBuffer::putU8(buffer, 0x0);
     UhcBuffer::putF32(buffer, m_player.position.x);
     UhcBuffer::putF32(buffer, m_player.position.y);
     UhcBuffer::putF32(buffer, 0.0f);
