@@ -113,6 +113,9 @@ void* networkThread(void* arg) {
 
         switch (packetId) {
             case Server::PacketId::IDENTIFICATION:
+                Server::Identification packet;
+                memcpy(&packet, buffer, sizeof(packet));
+                logD("Packet: IDENTIFICATION {}, {}", packet.id, packet.entityId);
                 break;
             case Server::PacketId::ENTITY_ADD:
                 break;
