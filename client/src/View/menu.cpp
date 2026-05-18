@@ -98,34 +98,69 @@ void MenuView::onDraw(double time_since_start, float dt) {
 
 void* networkThread(void* arg) {
     using namespace Zombled::Packets;
-    logD("networkThread Start");
+    logI("Network Thread Start");
 
     TcpClient::It client = *(TcpClient::It*)arg;
 
     char buffer[1024] = {};
 
     while (client.sockfd) {
-        logD("readAll 1");
         TcpClient::readAll(client, buffer, 1);
         uint8_t value = buffer[0];
         Server::PacketId packetId = (Server::PacketId)value;
 
         uint8_t size = Server::packetsSize.at(packetId);
-        logD("readAll size");
         TcpClient::readAll(client, buffer + 1, size - 1);
+
+        UhcBuffer::It buf{};
+        buf.handle = buffer;
+        UhcBuffer::setOrder(buf, UHC_BIG_ENDIAN);
 
         switch (packetId) {
             case Server::PacketId::IDENTIFICATION:
+            {
                 Server::Identification packet;
                 memcpy(&packet, buffer, sizeof(packet));
                 logD("Packet: IDENTIFICATION {}, {}", packet.id, packet.entityId);
                 break;
+            }
             case Server::PacketId::ENTITY_ADD:
+            {
+                Server::EntityAdd packet;
+
+                UhcBuffer::reset(buf);
+                packet.id = UhcBuffer::getU8(buf);
+                packet.entityId = UhcBuffer::getU32(buf);
+                packet.entityType = UhcBuffer::getU32(buf);
+                packet.x = UhcBuffer::getF32(buf);
+                packet.y = UhcBuffer::getF32(buf);
+                packet.z = UhcBuffer::getF32(buf);
+                packet.rot = UhcBuffer::getF32(buf);
+                // packet.name = UhcBuffer::get(buf);
                 break;
+            }
             case Server::PacketId::ENTITY_REMOVE:
+            {
+                Server::EntityRemove packet;
+
+                UhcBuffer::reset(buf);
+                packet.id = UhcBuffer::getU8(buf);
+                packet.entityId = UhcBuffer::getU32(buf);
                 break;
+            }
             case Server::PacketId::ENTITY_MOVE:
+            {
+                Server::EntityMove packet;
+
+                UhcBuffer::reset(buf);
+                packet.id = UhcBuffer::getU8(buf);
+                packet.entityId = UhcBuffer::getU32(buf);
+                packet.x = UhcBuffer::getF32(buf);
+                packet.y = UhcBuffer::getF32(buf);
+                packet.z = UhcBuffer::getF32(buf);
+                packet.rot = UhcBuffer::getF32(buf);
                 break;
+            }
         }
     }
 
@@ -137,7 +172,6 @@ void MenuView::connectToServer() {
 
     g_gameState.networkClient = TcpClient::create(buffer_ip, port);
     if (g_gameState.networkClient.sockfd != -1) {
-        // g_gameState.networkClient = it;
         static GameView gameView;
         Context::instance().viewPush(gameView);
 
