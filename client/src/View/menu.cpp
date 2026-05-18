@@ -40,11 +40,15 @@ MenuView::MenuView() {
 
 void MenuView::onUpdate(double time_since_start, float dt) {
     const Context& ctx = Context::instance();
+
+    m_shaderData.time = glm::mod(glfwGetTime(), 1000.0);
 }
 
 void MenuView::onDraw(double time_since_start, float dt) {
     VkCommandBuffer cb = Context::instance().getCommandBuffer();
     Context& ctx = Context::instance();
+
+    m_uniformBuffer.upload(&m_shaderData, sizeof(ShaderData));
 
     auto pass = RenderPass()
         .defaultViewportScissor()
@@ -59,6 +63,9 @@ void MenuView::onDraw(double time_since_start, float dt) {
     pass.execute([&]() {
         VkDeviceSize _vOffset{ 0 };
         vkCmdBindPipeline(cb, VK_PIPELINE_BIND_POINT_GRAPHICS, m_pipeline.pipeline);
+
+        m_uniformBuffer.pushConstant(m_pipeline.layout, VkShaderStageFlagBits(VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT));
+
         vkCmdBindVertexBuffers(cb, 0, 1, &m_bufferVertex.buffer, &_vOffset);
         vkCmdBindIndexBuffer(cb, m_bufferIndices.buffer, 0, VK_INDEX_TYPE_UINT16);
         const VkDeviceSize indexCount{ 6 };
