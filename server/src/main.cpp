@@ -53,9 +53,9 @@ void* clientThread(void* arg) {
         TcpServer::readAll(client, (char*)buffer.handle, 1);
 
         uint8_t value = UhcBuffer::getU8(buffer);
-        Server::PacketId packetId = (Server::PacketId)value;
+        Client::ClientPacketId packetId = (Client::ClientPacketId)value;
 
-        uint8_t size = Server::packetsSize.at(packetId);
+        uint8_t size = Client::packetsSize.at(packetId);
         TcpServer::readAll(client, (char*)(buffer.handle) + 1, size - 1);
 
 
@@ -76,7 +76,7 @@ void* clientThread(void* arg) {
         UhcBuffer::putF32(buffer2, clientPacket.z);
         UhcBuffer::putF32(buffer2, clientPacket.rot);
 
-        TcpServer::broadcast(clients, (const char*)buffer2.handle, sizeof(Client::EntityMove));
+        TcpServer::broadcast(clients, (const char*)buffer2.handle, sizeof(Server::EntityMove));
     }
 
     Log::info("Client left");

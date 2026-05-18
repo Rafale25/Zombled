@@ -69,6 +69,14 @@ namespace Zombled::Packets {
 
 #pragma pack(pop)
 
+        enum class ClientPacketId {
+            ENTITY_MOVE = 0x00,
+        };
+
+        inline const std::unordered_map<ClientPacketId, uint32_t> packetsSize = {
+            { ClientPacketId::ENTITY_MOVE, sizeof(EntityMove) },
+        };
+
     };
 
 };

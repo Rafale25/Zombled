@@ -96,6 +96,20 @@ void GameView::onUpdate(double time_since_start, float dt) {
         0
     };
 
+    static char buf[1024] = {};
+
+    UhcBuffer::It buffer;
+    buffer.handle = buf;
+
+    UhcBuffer::reset(buffer);
+    UhcBuffer::putU8(buffer, 0x03);
+    UhcBuffer::putF32(buffer, m_player.position.x);
+    UhcBuffer::putF32(buffer, m_player.position.y);
+    UhcBuffer::putF32(buffer, 0.0f);
+    UhcBuffer::putF32(buffer, 0.0f);
+
+    TcpClient::write(g_gameState.networkClient, (const char*)buffer.handle, sizeof(Zombled::Packets::Client::EntityMove));
+
     m_shaderData.projection = m_camera.getProjection();
     m_shaderData.view = m_camera.getView();
     m_shaderData.viewPosition = glm::vec4(m_camera.getPosition(), 0);
