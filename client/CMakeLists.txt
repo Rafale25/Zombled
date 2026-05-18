@@ -24,6 +24,7 @@ add_subdirectory(${LIBS_DIR}/uhcstd ${CMAKE_CURRENT_BINARY_DIR}/uhcstd)
 target_include_directories(${PROJECT_NAME}
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${LIBS_DIR}/ZombledNetworkProtocol
 )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE

@@ -1,5 +1,5 @@
 #include "Context.hpp"
-#include "View/menu.hpp"
+#include "View/Menu.hpp"
 #include "uhcio.hh"
 
 int main() {
