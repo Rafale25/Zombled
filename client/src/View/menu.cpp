@@ -1,6 +1,7 @@
 #include "Menu.hpp"
 #include "Game.hpp"
 #include "Context.hpp"
+#include "GameState.hpp"
 #include "UniformBuffer.hpp"
 #include "RenderPass.hpp"
 #include "GraphicsPipelineBuilder.hpp"
@@ -10,6 +11,7 @@
 #include <GLFW/glfw3.h>
 #include "imgui.h"
 #include "uhcnet.hh"
+
 
 
 MenuView::~MenuView() {
@@ -82,11 +84,17 @@ void MenuView::onDraw(double time_since_start, float dt) {
         ImGui::InputText("ip", buffer_ip, sizeof(buffer_ip));
 
         if (ImGui::Button("Join")) {
-
-            // TcpClient::create("127.0.0.1", 22222);
-            // logD("Joining...");
-            static GameView gameView;
-            ctx.viewPush(gameView);
+            const char* ip = "127.0.0.1";
+            uint16_t port = 22222;
+            auto it = TcpClient::create(ip, port);
+            if (it.sockfd != -1) {
+                g_gameState.networkClient = it;
+                static GameView gameView;
+                ctx.viewPush(gameView);
+                logI("Successfuly connected to {}:{}", ip, port);
+            } else {
+                logE("Failed to connect to {}:{}", ip, port);
+            }
         }
 
     ImGui::End();
