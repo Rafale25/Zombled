@@ -1,5 +1,5 @@
-#include "menu.hpp"
-#include "game.hpp"
+#include "Menu.hpp"
+#include "Game.hpp"
 #include "Context.hpp"
 #include "UniformBuffer.hpp"
 #include "RenderPass.hpp"
@@ -9,6 +9,7 @@
 #include <glm/ext/vector_float3.hpp>
 #include <GLFW/glfw3.h>
 #include "imgui.h"
+#include "uhcnet.hh"
 
 
 MenuView::~MenuView() {
@@ -81,6 +82,8 @@ void MenuView::onDraw(double time_since_start, float dt) {
         ImGui::InputText("ip", buffer_ip, sizeof(buffer_ip));
 
         if (ImGui::Button("Join")) {
+
+            // TcpClient::create("127.0.0.1", 22222);
             // logD("Joining...");
             static GameView gameView;
             ctx.viewPush(gameView);

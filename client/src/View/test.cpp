@@ -1,5 +1,5 @@
 #include "Context.hpp"
-#include "test.hpp"
+#include "Test.hpp"
 #include "UniformBuffer.hpp"
 #include "RenderPass.hpp"
 #include "GraphicsPipelineBuilder.hpp"
