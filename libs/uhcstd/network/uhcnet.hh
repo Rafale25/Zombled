@@ -106,5 +106,5 @@ namespace TcpServer {
     /// @param clients List of clients to send to
     /// @param buffer Data to broadcast
     /// @param size Number of bytes to send
-    void broadcast(List::It<TcpClient::It>& clients, char* buffer, unsigned int size);
+    void broadcast(List::It<TcpClient::It>& clients, const char* buffer, unsigned int size);
 };

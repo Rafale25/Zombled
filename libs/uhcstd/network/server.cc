@@ -74,7 +74,7 @@ namespace TcpServer {
         return 1;
     };
 
-    void broadcast(List::It<TcpClient::It>& clients, char* buffer, unsigned int size) {
+    void broadcast(List::It<TcpClient::It>& clients, const char* buffer, unsigned int size) {
         unsigned long long clientSize = List::size(clients);
 
         for (unsigned long long i = 0; i < clientSize; i++) {
@@ -168,7 +168,7 @@ namespace TcpServer {
         return 1;
     };
 
-    void broadcast(List::It<TcpClient::It>& clients, char* buffer, unsigned int size) {
+    void broadcast(List::It<TcpClient::It>& clients, const char* buffer, unsigned int size) {
         unsigned long long clientSize = List::size(clients);
 
         for (unsigned long long i = 0; i < clientSize; i++) {
