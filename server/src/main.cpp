@@ -22,6 +22,8 @@ void* clientThread(void* arg) {
         // Read
     }
 
+    Log::info("Client left");
+
     return NULL;
 }
 
@@ -29,9 +31,6 @@ void serverAccept(TcpClient::It* client) {
     Log::info("New client joined");
     
     Thread::It thread = Thread::start(clientThread, client);
-    Thread::join(thread);
-    
-    Log::info("Client left");
 }
 
 void* serverListen(void* arg) {
