@@ -97,16 +97,28 @@ void MenuView::onDraw(double time_since_start, float dt) {
 }
 
 void* networkThread(void* arg) {
+    using namespace Zombled::Packets;
+
     TcpClient::It client = *(TcpClient::It*)arg;
 
     char buffer[1024] = {};
 
     while (client.sockfd) {
         TcpClient::readAll(client, buffer, 1);
-        uint8_t packetId = buffer[0];
+        uint8_t value = buffer[0];
+        Server::PacketId packetId = (Server::PacketId)value;
+
+        uint8_t size = Server::packetsSize.at(packetId);
+        TcpClient::readAll(client, buffer + 1, size);
 
         switch (packetId) {
-            case 0:
+            case Server::PacketId::IDENTIFICATION:
+                break;
+            case Server::PacketId::ENTITY_ADD:
+                break;
+            case Server::PacketId::ENTITY_REMOVE:
+                break;
+            case Server::PacketId::ENTITY_MOVE:
                 break;
         }
     }

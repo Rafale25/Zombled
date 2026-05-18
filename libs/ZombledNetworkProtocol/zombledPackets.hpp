@@ -40,18 +40,18 @@ namespace Zombled::Packets {
 
 #pragma pack(pop)
 
-        enum PacketId {
+        enum class PacketId {
             IDENTIFICATION = 0x00,
             ENTITY_ADD = 0x01,
             ENTITY_REMOVE = 0x02,
             ENTITY_MOVE = 0x03,
         };
 
-        const std::unordered_map<PacketId, uint32_t> packetsSize = {
-            { IDENTIFICATION, sizeof(Identification) },
-            { ENTITY_ADD,     sizeof(EntityAdd)      },
-            { ENTITY_REMOVE,  sizeof(EntityRemove)   },
-            { ENTITY_MOVE,    sizeof(EntityMove)     },
+        inline const std::unordered_map<PacketId, uint32_t> packetsSize = {
+            { PacketId::IDENTIFICATION, sizeof(Identification) },
+            { PacketId::ENTITY_ADD,     sizeof(EntityAdd)      },
+            { PacketId::ENTITY_REMOVE,  sizeof(EntityRemove)   },
+            { PacketId::ENTITY_MOVE,    sizeof(EntityMove)     },
         };
     };
 
