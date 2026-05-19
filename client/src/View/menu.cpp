@@ -170,9 +170,12 @@ void* networkThread(void* arg) {
                 packet.z = UhcBuffer::getF32(buf);
                 packet.rot = UhcBuffer::getF32(buf);
 
-                Entity& e = *g_gameState.entities.at(packet.entityId);
-                e.position = glm::vec2(packet.x, packet.y);
-                e.rot = packet.rot;
+                auto it = g_gameState.entities.find(packet.entityId);
+                if (it != g_gameState.entities.end()) {
+                    Entity& e = *it->second;
+                    e.position = glm::vec2(packet.x, packet.y);
+                    e.rot = packet.rot;
+                }
                 break;
             }
         }
